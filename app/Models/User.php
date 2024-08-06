@@ -4,14 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
+use Filament\Panel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements HasAvatar
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasFactory, Notifiable, HasRoles;
 
@@ -25,6 +27,7 @@ class User extends Authenticatable implements HasAvatar
         'email',
         'password',
         'avatar_url',
+        'custom_fields',
     ];
 
     public function getFilamentAvatarUrl(): ?string
@@ -52,6 +55,12 @@ class User extends Authenticatable implements HasAvatar
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'custom_fields' => 'array'
         ];
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->hasPermissionTo('can_acess_admin');
     }
 }

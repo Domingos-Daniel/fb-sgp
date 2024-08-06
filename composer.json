@@ -7,11 +7,13 @@
     "require": {
         "php": "^8.2",
         "althinect/filament-spatie-roles-permissions": "^2.2",
+        "aymanalhattami/filament-slim-scrollbar": "^2.0",
         "filament/filament": "^3.2",
         "guava/filament-icon-picker": "^2.0",
         "joaopaulolndev/filament-edit-profile": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "njxqlus/filament-progressbar": "^1.0",
         "rupadana/filament-announce": "^3.2",
         "spatie/laravel-permission": "^6.9"
     },

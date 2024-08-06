@@ -18,7 +18,14 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationGroup = 'Administração';
+    protected static ?string $modelLabel = 'Utilizadores';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -33,14 +40,24 @@ class UserResource extends Resource
                     ->maxLength(255),
                 //Forms\Components\DateTimePicker::make('email_verified_at'),
                 Forms\Components\TextInput::make('password')
-                    ->password()->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                    ->password()
+                    ->required()
+                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create')
-                    ->maxLength(32)
-                    ->label("Senha"),
+                    ->maxLength(255)
+                    ->label("Palavra Passe"),
                 Forms\Components\Select::make('roles')
+                    ->label("Função")
+                    ->hint("Selecione uma ou mais funções para o utilizador")
+                    ->relationship('roles', 'name', function (Builder $query) {
+                        return auth()->user()->hasRole('Admin') ? $query : $query->where('name', '!=', 'Admin');
+                    })
                     ->multiple()
-                    ->relationship('roles', 'name')
+                    ->native(false)
+                    ->searchable()
+                    ->required(fn (string $context): bool => $context === 'create')
+                    ->preload(),
             ]);
     }
 
@@ -49,18 +66,23 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
+                    ->searchable()
+                    ->label("Nome do Utilizador")
                     ->sortable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->label("Email"),
+                // Tables\Columns\TextColumn::make('email_verified_at')
+                //     ->dateTime()
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime(format: 'd/m/Y H:i:s')
+                    ->label("Criado em")
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->dateTime(format: 'd/m/Y H:i:s')
+                    ->label("Actualizado em")
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -93,5 +115,15 @@ class UserResource extends Resource
             'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return auth()->user()->hasRole('Admin')
+            ? parent::getEloquentQuery()
+            : parent::getEloquentQuery()->whereHas(
+                'roles',
+                fn (Builder $query) => $query->where('name', '!=', 'Admin')
+            );
     }
 }

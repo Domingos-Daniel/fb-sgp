@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3d68b47704bbe25270e14382bcf2dc47",
+    "content-hash": "64fc1f2803025ab5af2b5ca74cf75494",
     "packages": [
         {
             "name": "althinect/filament-spatie-roles-permissions",
@@ -134,6 +134,66 @@
                 "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.2.23"
             },
             "time": "2024-07-12T10:52:26+00:00"
+        },
+        {
+            "name": "aymanalhattami/filament-slim-scrollbar",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aymanalhattami/filament-slim-scrollbar.git",
+                "reference": "0d7b004bc1c5775cd03fa1119579a24aeab6e9c5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aymanalhattami/filament-slim-scrollbar/zipball/0d7b004bc1c5775cd03fa1119579a24aeab6e9c5",
+                "reference": "0d7b004bc1c5775cd03fa1119579a24aeab6e9c5",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "spatie/laravel-package-tools": "^1.15"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Aymanalhattami\\FilamentSlimScrollbar\\FilamentSlimScrollbarServiceProvider"
+                    ],
+                    "aliases": {
+                        "FilamentSlimScrollbar": "Aymanalhattami\\FilamentSlimScrollbar\\FilamentSlimScrollbarFacade"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Aymanalhattami\\FilamentSlimScrollbar\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ayman Alhattami",
+                    "email": "ayman.m.alhattami@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Slim scrollbar for sidebar scrollbar, table scrollbar, and any other scrollbar in the application.",
+            "homepage": "https://github.com/aymanalhattami/filament-slim-scrollbar",
+            "keywords": [
+                "aymanalhattami",
+                "css slim scrollbar",
+                "filament",
+                "filament-slim-scrollbar",
+                "pure css scrollbar"
+            ],
+            "support": {
+                "issues": "https://github.com/aymanalhattami/filament-slim-scrollbar/issues",
+                "source": "https://github.com/aymanalhattami/filament-slim-scrollbar/tree/2.0.0"
+            },
+            "time": "2023-08-08T09:31:59+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -4187,6 +4247,86 @@
                 "source": "https://github.com/nikic/PHP-Parser/tree/v5.1.0"
             },
             "time": "2024-07-01T20:03:41+00:00"
+        },
+        {
+            "name": "njxqlus/filament-progressbar",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/njxqlus/filament-progressbar.git",
+                "reference": "8d7f955e69e44dbc3b05a089b9ad1073ba8e37ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/njxqlus/filament-progressbar/zipball/8d7f955e69e44dbc3b05a089b9ad1073ba8e37ba",
+                "reference": "8d7f955e69e44dbc3b05a089b9ad1073ba8e37ba",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "illuminate/contracts": "^10.0|^11.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.9",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^8.0|^9.0",
+                "pestphp/pest": "^2.0",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Njxqlus\\FilamentProgressbar\\FilamentProgressbarServiceProvider"
+                    ],
+                    "aliases": {
+                        "FilamentProgressbar": "Njxqlus\\FilamentProgressbar\\Facades\\FilamentProgressbar"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Njxqlus\\FilamentProgressbar\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mikael Ahabalyants",
+                    "email": "njxqlus@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "This Filament component shows a progress bar at the top of the page when we navigate from one page to another",
+            "homepage": "https://github.com/njxqlus/filament-progressbar",
+            "keywords": [
+                "filament",
+                "laravel",
+                "njxqlus",
+                "pace-js",
+                "progressbar"
+            ],
+            "support": {
+                "issues": "https://github.com/njxqlus/filament-progressbar/issues",
+                "source": "https://github.com/njxqlus/filament-progressbar"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/njxqlus",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-02-28T19:40:25+00:00"
         },
         {
             "name": "nunomaduro/termwind",

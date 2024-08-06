@@ -22,7 +22,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Rupadana\FilamentAnnounce\FilamentAnnouncePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
-
+use Njxqlus\FilamentProgressbar\FilamentProgressbarPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -86,6 +86,8 @@ class AdminPanelProvider extends PanelProvider
                 FilamentAnnouncePlugin::make()
                     ->pollingInterval('30s') 
                     ->defaultColor(Color::Blue),
+                FilamentProgressbarPlugin::make()
+                    ->color('#4dbd1f'),
             );
     }
 }

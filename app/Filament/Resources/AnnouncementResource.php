@@ -19,7 +19,11 @@ class AnnouncementResource extends Resource
 {
     protected static ?string $model = Announcement::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
+
+    protected static ?string $modelLabel = 'Anúncio';
+    protected static ?string $pluralModelLabel = 'Anúncios';
+    protected static ?string $navigationGroup = 'Administração';
 
     public static function form(Form $form): Form
     {
