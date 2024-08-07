@@ -19,7 +19,8 @@ class RoleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-information-circle';
     protected static ?string $navigationGroup = 'Administração';
-    protected static ?string $modelLabel = 'Funções';
+    protected static ?string $modelLabel = 'Função';
+    protected static ?string $pluralModelLabel = 'Funções';
 
     public static function getNavigationBadge(): ?string
     {

@@ -20,7 +20,9 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Administração';
-    protected static ?string $modelLabel = 'Utilizadores';
+    protected static ?string $modelLabel = 'Utilizador';
+    protected static ?string $pluralModelLabel = 'Utilizadores';
+
 
     public static function getNavigationBadge(): ?string
     {
