@@ -3,11 +3,13 @@
 namespace App\Providers\Filament;
 
 use Althinect\FilamentSpatieRolesPermissions\FilamentSpatieRolesPermissionsPlugin;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
 use Filament\Pages;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -23,6 +25,8 @@ use Rupadana\FilamentAnnounce\FilamentAnnouncePlugin;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Njxqlus\FilamentProgressbar\FilamentProgressbarPlugin;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use pxlrbt\FilamentSpotlight\SpotlightPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -43,8 +47,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 'profile' => MenuItem::make()
-                    ->label(fn() => auth()->user()->name)
-                    ->url(fn (): string => EditProfilePage ::getUrl())
+                    ->label(fn () => auth()->user()->name)
+                    ->url(fn (): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle'),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
@@ -82,12 +86,24 @@ class AdminPanelProvider extends PanelProvider
                         value: true,
                         directory: 'avatars', // image will be stored in 'storage/app/public/avatars
                         rules: 'mimes:jpeg,png|max:1024' //only accept jpeg and png files with a maximum size of 1MB
-                    ),
+                    )
+            )
+            ->plugin(
                 FilamentAnnouncePlugin::make()
-                    ->pollingInterval('30s') 
-                    ->defaultColor(Color::Blue),
+                    ->pollingInterval('30s')
+                    ->defaultColor(Color::Blue)
+            )
+            ->plugin(
                 FilamentProgressbarPlugin::make()
-                    ->color('#4dbd1f'),
+                    ->color('#4dbd1f')
+            )
+            ->plugins([
+                SpotlightPlugin::make(),
+            ])
+            ->plugin(
+                EnvironmentIndicatorPlugin::make()
+                    ->visible(fn () => auth()->user()->hasRole('Admin'))
+                    
             );
     }
 }

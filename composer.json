@@ -15,6 +15,9 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "njxqlus/filament-progressbar": "^1.0",
+        "pxlrbt/filament-environment-indicator": "^2.0",
+        "pxlrbt/filament-spotlight": "^1.2",
+        "rmsramos/activitylog": "*",
         "rupadana/filament-announce": "^3.2",
         "spatie/laravel-permission": "^6.9"
     },
