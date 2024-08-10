@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
+use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 
 class UserResource extends Resource
 {
@@ -102,10 +103,12 @@ class UserResource extends Resource
             ]);
     }
 
+
+
     public static function getRelations(): array
     {
         return [
-            //
+            //ActivitylogRelationManager::class,
         ];
     }
 

@@ -27,6 +27,7 @@ use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Njxqlus\FilamentProgressbar\FilamentProgressbarPlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use pxlrbt\FilamentSpotlight\SpotlightPlugin;
+use Rmsramos\Activitylog\ActivitylogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -47,7 +48,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 'profile' => MenuItem::make()
-                    ->label(fn () => auth()->user()->name)
+                    ->label(fn () => auth()->check() ? auth()->user()->name : 'Guest')
                     ->url(fn (): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle'),
             ])
@@ -70,6 +71,9 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->plugins([
+                
+            ])
             ->plugin(
                 FilamentEditProfilePlugin::make()
                     ->slug('my-profile')
@@ -88,7 +92,10 @@ class AdminPanelProvider extends PanelProvider
                         rules: 'mimes:jpeg,png|max:1024' //only accept jpeg and png files with a maximum size of 1MB
                     )
             )
-            ->plugin(
+            ->plugin(ActivitylogPlugin::make()
+            ->navigationGroup('Administração')
+            ->navigationIcon('heroicon-o-shield-check')
+            ->navigationCountBadge(true),
                 FilamentAnnouncePlugin::make()
                     ->pollingInterval('30s')
                     ->defaultColor(Color::Blue)
@@ -102,7 +109,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugin(
                 EnvironmentIndicatorPlugin::make()
-                    ->visible(fn () => auth()->user()->hasRole('Admin'))
+                    ->visible(fn () => fn () => auth()->check() ? auth()->user()->hasRole('Admin') : false)
                     
             );
     }
