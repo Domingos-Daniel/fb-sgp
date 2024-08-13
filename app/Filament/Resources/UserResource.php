@@ -4,11 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Models\Role;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -70,40 +72,75 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->label("Nome do Utilizador")
-                    ->sortable(),
+                    ->label("Nome Completo"),
                 Tables\Columns\TextColumn::make('email')
+                    ->label("Email")
+                    ->badge()
+                    ->color('success')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Função')
                     ->searchable()
-                    ->label("Email"),
-                // Tables\Columns\TextColumn::make('email_verified_at')
-                //     ->dateTime()
-                //     ->sortable(),
+                    ->badge()
+                    ->color(
+                        fn ($record) => $record->roles->pluck('name')->first() === "Admin" ? "success" : "info",
+                        
+
+                    )
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('email_verified_at')
+                    ->dateTime(format: "d/m/Y H:i:s")
+                    ->sortable()
+                    ->label("Data Validado"),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime(format: 'd/m/Y H:i:s')
-                    ->label("Criado em")
+                    ->label("Data Criado")
+                    ->dateTime(format: "d/m/Y H:i:s")
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime(format: 'd/m/Y H:i:s')
-                    ->label("Actualizado em")
+                    ->label("Data Atualizado")
+                    ->dateTime(format: "d/m/Y H:i:s")
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('roles')
+                    ->relationship('roles', 'name')
+                    ->options(Role::all()->pluck('name', 'id'))
+                    ->label('Função')
+                    ->multiple()
+                    ->placeholder('Pesquisar funções...'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                // Tables\Actions\Action::make('export')
+                // ->label('Exportar')
+                // ->action(function () {
+                //     return Excel::download(new UsersExporter, 'users.xlsx');
+                // }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    // ExportBulkAction::make('exportcsv')
+                    //     ->label('Exportar CSV')
+                    //     ->formats([
+                    //         ExportFormat::Csv,
+                    //     ])
+                    //     ->exporter(UserExporter::class) 
+                    //     ->columnMapping(true),
+ 
+                    
+                    // ExcelExportBulkAction::make('exportxlsx')
+                    //     ->label('Exportar Excel')
+                    //     ->icon('heroicon-o-document-text')
+                    //     ->color('primary'),
+                        
+
                 ]),
             ]);
     }
-
-
 
     public static function getRelations(): array
     {

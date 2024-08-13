@@ -40,7 +40,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['name', 'email', 'password', 'custom_fields']);
+        ->logOnly(['name', 'email', 'password', 'custom_fields', 'avatar_url']);
     }
 
     public function getFilamentAvatarUrl(): ?string
