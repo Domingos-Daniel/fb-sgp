@@ -2,21 +2,25 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\UsersExport;
+use App\Filament\Exports\UserExporter;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\Role;
 use App\Models\User;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\ExportBulkAction as ActionsExportBulkAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
-use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use Filament\Tables\Actions\ExportBulkAction;
 
 class UserResource extends Resource
 {
@@ -124,7 +128,16 @@ class UserResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    ExportBulkAction::make()
+                    ExportBulkAction::make('export')
+                        ->label('Exportar')
+                        ->exporter(UserExporter::class) 
+                        ->columnMapping(true)
+                        ->formats([
+                            ExportFormat::Xlsx,
+                            ExportFormat::Csv,
+                        ]),
+                       
+                    
                     // ExportBulkAction::make('exportcsv')
                     //     ->label('Exportar CSV')
                     //     ->formats([
