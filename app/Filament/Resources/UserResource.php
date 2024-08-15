@@ -21,6 +21,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Hash;
 use Rmsramos\Activitylog\RelationManagers\ActivitylogRelationManager;
 use Filament\Tables\Actions\ExportBulkAction;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components;
+use Filament\Support\Enums\FontWeight;
 
 class UserResource extends Resource
 {
@@ -89,8 +92,6 @@ class UserResource extends Resource
                     ->badge()
                     ->color(
                         fn ($record) => $record->roles->pluck('name')->first() === "Admin" ? "success" : "info",
-                        
-
                     )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
@@ -157,10 +158,59 @@ class UserResource extends Resource
             ]);
     }
 
+
+
+public static function infolist(Infolist $infolist): Infolist
+{
+    return $infolist
+        ->schema([
+            Components\Split::make([
+                // Seção de Informações Pessoais
+                Components\Section::make('Informações Pessoais')
+                    ->schema([
+                        Components\TextEntry::make('name')
+                            ->badge()
+                            ->label('Nome Completo')
+                            ->weight(FontWeight::Bold)
+                            ->color('info'),
+                        Components\TextEntry::make('email')
+                            ->badge()
+                            ->label('Email')
+                            ->color('success'),
+                        Components\TextEntry::make('roles.name')
+                            ->badge()
+                            ->label('Função')
+                            ->color(
+                                fn ($record) => $record->roles->pluck('name')->first() === "Admin" ? "success" : "info",
+                            ),
+                    ])->grow(true),
+            ]),
+
+            // Seção de Datas
+            Components\Split::make([
+                Components\Section::make('Datas Importantes')->schema([
+                    Components\TextEntry::make('email_verified_at')
+                        ->badge()
+                        ->label('Data Validado')
+                        ->color('info'),
+                    Components\TextEntry::make('created_at')
+                        ->badge()
+                        ->label('Data Criado')
+                        ->color('info'),
+                    Components\TextEntry::make('updated_at')
+                        ->badge()
+                        ->label('Data Atualizado')
+                        ->color('info'),
+                ]),
+            ]),
+        ]);
+}
+
+
     public static function getRelations(): array
     {
         return [
-            //ActivitylogRelationManager::class,
+            ActivitylogRelationManager::class,
         ];
     }
 

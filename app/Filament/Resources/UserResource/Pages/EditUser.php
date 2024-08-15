@@ -22,6 +22,7 @@ class EditUser extends EditRecord
 
     protected function getSavedNotification(): ?Notification
     {
+        $id = $this->record->id;
         return Notification::make()
             ->success()
             ->title('Utilizador Actualizado')
@@ -30,7 +31,7 @@ class EditUser extends EditRecord
                 B::make('view')
                     ->label('Visualizar')
                     ->button()
-                    ->url(route('filament.admin.resources.users.index')),
+                    ->url(route('filament.admin.resources.users.view', ['record' => $id]))
             ])
             ->sendToDatabase(\auth()->user());
     }
