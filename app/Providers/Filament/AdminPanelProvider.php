@@ -92,8 +92,14 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 ActivitylogPlugin::make()
                     ->navigationGroup('Auditoria')
+                    ->label('Log de Actividade')
+                    ->pluralLabel('Log de Actividades')
+                    ->navigationSort(-10)
                     ->navigationIcon('heroicon-o-shield-check')
-                    ->navigationCountBadge(true),
+                    ->navigationCountBadge(true)
+                    ->authorize(
+                        fn () => auth()->check() ? auth()->user()->hasRole('Admin') : false
+                    ),
 
                 FilamentProgressbarPlugin::make()
                     ->color('#4dbd1f'),
