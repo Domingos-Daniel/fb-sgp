@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "13d6823b16184bc2a277da589334511a",
+    "content-hash": "0e084fef7fa7d3bf37e76d8d5dccc3cf",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1345,6 +1345,83 @@
                 }
             ],
             "time": "2023-08-10T19:36:49+00:00"
+        },
+        {
+            "name": "edwink/filament-user-activity",
+            "version": "1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/edwink75/filament-user-activity.git",
+                "reference": "caad79e2baafb34da287f63ea7273cc90d04f7fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/edwink75/filament-user-activity/zipball/caad79e2baafb34da287f63ea7273cc90d04f7fc",
+                "reference": "caad79e2baafb34da287f63ea7273cc90d04f7fc",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "illuminate/contracts": "^10.0|^11.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "conflict": {
+                "z3d0x/filament-logger": "*"
+            },
+            "require-dev": {
+                "nunomaduro/collision": "^7.9",
+                "orchestra/testbench": "^8.0",
+                "pestphp/pest": "^2.0",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Edwink\\FilamentUserActivity\\FilamentUserActivityServiceProvider"
+                    ],
+                    "aliases": {
+                        "FilamentUserActivity": "Edwink\\FilamentUserActivity\\Facades\\FilamentUserActivity"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Edwink\\FilamentUserActivity\\": "src/",
+                    "Edwink\\FilamentUserActivity\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Edwin Krause",
+                    "email": "edwin@kitc.eu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Tracks user activity and shows currently active users",
+            "homepage": "https://github.com/edwink75/filament-user-activity",
+            "keywords": [
+                "edwink",
+                "filament-user-activity",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/edwink75/filament-user-activity/issues",
+                "source": "https://github.com/edwink75/filament-user-activity"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/edwink",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-04-08T16:03:58+00:00"
         },
         {
             "name": "egulias/email-validator",

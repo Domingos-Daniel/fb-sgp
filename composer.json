@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.2",
         "aymanalhattami/filament-slim-scrollbar": "^2.0",
+        "edwink/filament-user-activity": "^1.0",
         "filament/filament": "^3.2",
         "filament/notifications": "^3.2",
         "guava/filament-icon-picker": "^2.0",

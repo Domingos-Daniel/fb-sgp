@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Edwink\FilamentUserActivity\FilamentUserActivityPlugin;
 use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -68,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \Edwink\FilamentUserActivity\Http\Middleware\RecordUserActivity::class,
             ])
             ->plugin(
                 FilamentEditProfilePlugin::make()
@@ -89,7 +91,7 @@ class AdminPanelProvider extends PanelProvider
             )
             ->plugins([
                 ActivitylogPlugin::make()
-                    ->navigationGroup('Administração')
+                    ->navigationGroup('Auditoria')
                     ->navigationIcon('heroicon-o-shield-check')
                     ->navigationCountBadge(true),
 
@@ -101,6 +103,9 @@ class AdminPanelProvider extends PanelProvider
                 // EnvironmentIndicatorPlugin::make()
                 //     ->visible(fn () => auth()->check() ? auth()->user()->hasRole('Admin') : false),
             ])
+            ->plugin(
+                FilamentUserActivityPlugin::make()
+             )
 
 
             ->databaseNotifications()
