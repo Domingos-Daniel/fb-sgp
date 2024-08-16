@@ -24,6 +24,7 @@ use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components;
 use Filament\Support\Enums\FontWeight;
+use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class UserResource extends Resource
 {
@@ -55,9 +56,9 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required()
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (string $context): bool => $context === 'create')
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                    ->dehydrated(fn($state) => filled($state))
+                    ->required(fn(string $context): bool => $context === 'create')
                     ->maxLength(255)
                     ->label("Palavra Passe"),
                 Forms\Components\Select::make('roles')
@@ -69,7 +70,7 @@ class UserResource extends Resource
                     ->multiple()
                     ->native(false)
                     ->searchable()
-                    ->required(fn (string $context): bool => $context === 'create')
+                    ->required(fn(string $context): bool => $context === 'create')
                     ->preload(),
             ]);
     }
@@ -91,13 +92,13 @@ class UserResource extends Resource
                     ->searchable()
                     ->badge()
                     ->color(
-                        fn ($record) => $record->roles->pluck('name')->first() === "Admin" ? "success" : "info",
+                        fn($record) => $record->roles->pluck('name')->first() === "Admin" ? "success" : "info",
                     )
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime(format: "d/m/Y H:i:s")
-                    ->sortable()
-                    ->label("Data Validado"),
+                // Tables\Columns\TextColumn::make('email_verified_at')
+                //     ->dateTime(format: "d/m/Y H:i:s")
+                //     ->sortable()
+                //     ->label("Data Validado"),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label("Data Criado")
                     ->dateTime(format: "d/m/Y H:i:s")
@@ -120,6 +121,17 @@ class UserResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                ActivityLogTimelineTableAction::make('Activities')
+                    ->color('warning')
+                    ->label('Actividades')
+                    ->timelineIcons([
+                        'created' => 'heroicon-m-check-badge',
+                        'updated' => 'heroicon-m-pencil-square',
+                    ])
+                    ->timelineIconColors([
+                        'created' => 'info',
+                        'updated' => 'warning',
+                    ]),
                 // Tables\Actions\Action::make('export')
                 // ->label('Exportar')
                 // ->action(function () {
@@ -131,14 +143,14 @@ class UserResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                     ExportBulkAction::make('export')
                         ->label('Exportar')
-                        ->exporter(UserExporter::class) 
+                        ->exporter(UserExporter::class)
                         ->columnMapping(true)
                         ->formats([
                             ExportFormat::Xlsx,
                             ExportFormat::Csv,
                         ]),
-                       
-                    
+
+
                     // ExportBulkAction::make('exportcsv')
                     //     ->label('Exportar CSV')
                     //     ->formats([
@@ -146,13 +158,13 @@ class UserResource extends Resource
                     //     ])
                     //     ->exporter(UserExporter::class) 
                     //     ->columnMapping(true),
- 
-                    
+
+
                     // ExcelExportBulkAction::make('exportxlsx')
                     //     ->label('Exportar Excel')
                     //     ->icon('heroicon-o-document-text')
                     //     ->color('primary'),
-                        
+
 
                 ]),
             ]);
@@ -160,51 +172,51 @@ class UserResource extends Resource
 
 
 
-public static function infolist(Infolist $infolist): Infolist
-{
-    return $infolist
-        ->schema([
-            Components\Split::make([
-                // Seção de Informações Pessoais
-                Components\Section::make('Informações Pessoais')
-                    ->schema([
-                        Components\TextEntry::make('name')
-                            ->badge()
-                            ->label('Nome Completo')
-                            ->weight(FontWeight::Bold)
-                            ->color('info'),
-                        Components\TextEntry::make('email')
-                            ->badge()
-                            ->label('Email')
-                            ->color('success'),
-                        Components\TextEntry::make('roles.name')
-                            ->badge()
-                            ->label('Função')
-                            ->color(
-                                fn ($record) => $record->roles->pluck('name')->first() === "Admin" ? "success" : "info",
-                            ),
-                    ])->grow(true),
-            ]),
-
-            // Seção de Datas
-            Components\Split::make([
-                Components\Section::make('Datas Importantes')->schema([
-                    Components\TextEntry::make('email_verified_at')
-                        ->badge()
-                        ->label('Data Validado')
-                        ->color('info'),
-                    Components\TextEntry::make('created_at')
-                        ->badge()
-                        ->label('Data Criado')
-                        ->color('info'),
-                    Components\TextEntry::make('updated_at')
-                        ->badge()
-                        ->label('Data Atualizado')
-                        ->color('info'),
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Components\Split::make([
+                    // Seção de Informações Pessoais
+                    Components\Section::make('Informações Pessoais')
+                        ->schema([
+                            Components\TextEntry::make('name')
+                                ->badge()
+                                ->label('Nome Completo')
+                                ->weight(FontWeight::Bold)
+                                ->color('info'),
+                            Components\TextEntry::make('email')
+                                ->badge()
+                                ->label('Email')
+                                ->color('success'),
+                            Components\TextEntry::make('roles.name')
+                                ->badge()
+                                ->label('Função')
+                                ->color(
+                                    fn($record) => $record->roles->pluck('name')->first() === "Admin" ? "success" : "info",
+                                ),
+                        ])->grow(true),
                 ]),
-            ]),
-        ]);
-}
+
+                // Seção de Datas
+                Components\Split::make([
+                    Components\Section::make('Datas Importantes')->schema([
+                        Components\TextEntry::make('email_verified_at')
+                            ->badge()
+                            ->label('Data Validado')
+                            ->color('info'),
+                        Components\TextEntry::make('created_at')
+                            ->badge()
+                            ->label('Data Criado')
+                            ->color('info'),
+                        Components\TextEntry::make('updated_at')
+                            ->badge()
+                            ->label('Data Atualizado')
+                            ->color('info'),
+                    ]),
+                ]),
+            ]);
+    }
 
 
     public static function getRelations(): array
@@ -230,7 +242,7 @@ public static function infolist(Infolist $infolist): Infolist
             ? parent::getEloquentQuery()
             : parent::getEloquentQuery()->whereHas(
                 'roles',
-                fn (Builder $query) => $query->where('name', '!=', 'Admin')
+                fn(Builder $query) => $query->where('name', '!=', 'Admin')
             );
     }
 }
