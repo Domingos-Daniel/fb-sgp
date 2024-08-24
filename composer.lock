@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16196b23aa3920f9be63cd0f6eae2515",
+    "content-hash": "d580c6707f693807a1a20c35e043bd24",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1489,80 +1489,6 @@
                 }
             ],
             "time": "2023-10-06T06:47:41+00:00"
-        },
-        {
-            "name": "eightynine/filament-excel-import",
-            "version": "v3.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/eighty9nine/filament-excel-import.git",
-                "reference": "bcce0ee7659f46413a7deda59873d3bc8f8d3239"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/eighty9nine/filament-excel-import/zipball/bcce0ee7659f46413a7deda59873d3bc8f8d3239",
-                "reference": "bcce0ee7659f46413a7deda59873d3bc8f8d3239",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^3.0",
-                "illuminate/contracts": "^10.0|^11.0",
-                "maatwebsite/excel": "^3.1",
-                "php": "^8.1",
-                "spatie/laravel-package-tools": "^1.15.0"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.0",
-                "nunomaduro/collision": "^7.9|^8.1",
-                "nunomaduro/larastan": "^2.0.1",
-                "orchestra/testbench": "^8.0|^9.0",
-                "pestphp/pest": "^2.0",
-                "pestphp/pest-plugin-arch": "^2.0",
-                "pestphp/pest-plugin-laravel": "^2.0",
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-phpunit": "^1.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "EightyNine\\ExcelImport\\ExcelImportServiceProvider"
-                    ],
-                    "aliases": {
-                        "ExcelImportAction": "EightyNine\\ExcelImport\\Facades\\ExcelImportAction"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "EightyNine\\ExcelImport\\": "src/",
-                    "EightyNine\\ExcelImport\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Eighty Nine",
-                    "email": "eighty9nine@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Import Excel files with Laravel Filament.",
-            "homepage": "https://github.com/eightynine/filament-excel-import",
-            "keywords": [
-                "eightynine",
-                "filament-excel-import",
-                "laravel"
-            ],
-            "support": {
-                "issues": "https://github.com/eightynine/filament-excel-import/issues",
-                "source": "https://github.com/eightynine/filament-excel-import"
-            },
-            "time": "2024-07-20T21:23:39+00:00"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -10124,6 +10050,54 @@
                 }
             ],
             "time": "2024-03-02T12:10:01+00:00"
+        },
+        {
+            "name": "yemenopensource/filament-excel",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/YemenOpenSource/filament-excel.git",
+                "reference": "ea62aba183e52bd0aa515ec3bd56b328ae2402e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/YemenOpenSource/filament-excel/zipball/ea62aba183e52bd0aa515ec3bd56b328ae2402e0",
+                "reference": "ea62aba183e52bd0aa515ec3bd56b328ae2402e0",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^11",
+                "maatwebsite/excel": "^3.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "YOS\\FilamentExcel\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "YOS\\FilamentExcel\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "muathye",
+                    "email": "muath.ye@gmail.com"
+                }
+            ],
+            "description": "This package useful for importing excel files into models.",
+            "support": {
+                "issues": "https://github.com/YemenOpenSource/filament-excel/issues",
+                "source": "https://github.com/YemenOpenSource/filament-excel/tree/v0.1.0"
+            },
+            "time": "2024-06-05T22:37:04+00:00"
         }
     ],
     "packages-dev": [
