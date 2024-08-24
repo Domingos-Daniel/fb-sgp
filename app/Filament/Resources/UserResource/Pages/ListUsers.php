@@ -16,8 +16,8 @@ class ListUsers extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
-            ImportAction::make()
-            ->importer(UserImporter::class)
+            \EightyNine\ExcelImport\ExcelImportAction::make()
+                ->color("primary"),
         ];
     }
 }
