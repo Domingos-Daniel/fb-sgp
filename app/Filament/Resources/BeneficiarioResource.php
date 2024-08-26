@@ -71,9 +71,10 @@ class BeneficiarioResource extends Resource
                                     'mimetypes:image/jpeg,image/png,image/jpg'
                                 )
                                 ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file): string {
-                                    $randomNumber = Str::padLeft(rand(1, 9999), 4, '0');
+                                    $count = Beneficiario::count() + 1; // Conta o número de registros e incrementa 1
                                     $extension = $file->getClientOriginalExtension();
-                                    return "fb{$randomNumber}.{$extension}";
+                                    $filename = Str::padLeft($count, 4, '0'); // Gera um número com 4 dígitos, com zeros à esquerda
+                                    return "fb{$filename}.{$extension}";
                                 }),
 
                             Select::make('tipo_beneficiario')
@@ -100,6 +101,7 @@ class BeneficiarioResource extends Resource
 
                                 TextInput::make('bi')
                                     ->label('BI')
+                                    ->unique()
                                     ->maxLength(14)
                                     ->minLength(14)
                                     ->required()
@@ -108,6 +110,7 @@ class BeneficiarioResource extends Resource
                                 TextInput::make('nif')
                                     ->label('NIF da Instituição')
                                     ->maxLength(14)
+                                    ->unique()
                                     ->minLength(14)
                                     ->required()
                                     ->visible(fn($get) => $get('tipo_beneficiario') === 'Institucional'),
