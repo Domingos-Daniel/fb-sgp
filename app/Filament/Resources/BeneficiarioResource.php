@@ -7,10 +7,20 @@ use App\Filament\Resources\BeneficiarioResource\RelationManagers;
 use App\Models\Beneficiario;
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,16 +32,32 @@ class BeneficiarioResource extends Resource
     protected static ?string $model = Beneficiario::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
     public static function form(Form $form): Form
     {
         return $form
             ->columns(1)
             ->schema([
                 Wizard::make([
+                    // Passo 1: Tipo de Beneficiário
                     Wizard\Step::make('Tipo de Beneficiário')
                         ->schema([
-                            Forms\Components\Select::make('tipo_beneficiario')
+                            FileUpload::make('imagem')
+                                ->label('Foto do Beneficiário')
+                                ->image()
+                                ->maxSize(1024)
+                                ->maxFiles(1)
+                                ->visibility('public')
+                                ->required()
+                                ->directory('beneficiarios')
+                                ->getUploadedFileNameForStorageUsing(function ($file, $record) {
+                                    $prefix = 'fb';
+                                    $id = str_pad($record->id ?? Beneficiario::max('id') + 1, 3, '0', STR_PAD_LEFT);
+                                    $extension = $file->getClientOriginalExtension();
+                                    return "{$prefix}{$id}.{$extension}";
+                                })
+                                ->columnSpanFull(),
+                            
+                            Select::make('tipo_beneficiario')
                                 ->label('Tipo de Beneficiário')
                                 ->options([
                                     'Individual' => 'Individual',
@@ -39,69 +65,69 @@ class BeneficiarioResource extends Resource
                                 ])
                                 ->required()
                                 ->native(false)
-                                ->reactive()
-                                ->afterStateUpdated(fn (callable $set) => $set('is_individual', fn ($state) => $state === 'Individual'))
+                                ->reactive() // Garantir que o campo é reativo
                                 ->default('Individual'),
                         ])
                         ->columns(1),
-                    
+    
+                    // Passo 2: Informações Pessoais ou Institucionais
                     Wizard\Step::make('Informações Pessoais ou Institucionais')
                         ->schema([
                             Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('nome')
-                                    ->label(fn (Get $get) => $get('is_individual') ? 'Nome Completo' : 'Nome da Instituição')
+                                TextInput::make('nome')
+                                    ->label(fn ($get) => $get('tipo_beneficiario') === 'Individual' ? 'Nome Completo' : 'Nome da Instituição')
                                     ->required()
                                     ->maxLength(255),
                             
-                                Forms\Components\TextInput::make('bi')
+                                TextInput::make('bi')
                                     ->label('BI')
                                     ->maxLength(14)
                                     ->minLength(14)
-                                    //->default('Não Aplicável')
-                                    ->visible(fn (Get $get) => $get('tipo_beneficiario') === 'Individual'),
+                                    ->required()
+                                    ->visible(fn ($get) => $get('tipo_beneficiario') === 'Individual'),
                             
-                                Forms\Components\TextInput::make('nif')
+                                TextInput::make('nif')
                                     ->label('NIF da Instituição')
                                     ->maxLength(14)
                                     ->minLength(14)
-                                    //->default('Não Aplicável')
-                                    ->visible(fn (Get $get) => $get('tipo_beneficiario') === 'Institucional'),
+                                    ->required()
+                                    ->visible(fn ($get) => $get('tipo_beneficiario') === 'Institucional'),
                             ]),
                             
                             Grid::make(2)->schema([
-                                Forms\Components\DatePicker::make('data_nascimento')
+                                DatePicker::make('data_nascimento')
                                     ->label('Data de Nascimento')
                                     ->native(false)
-                                    ->required(fn (Get $get) => $get('tipo_beneficiario') === 'Individual')
+                                    ->required(fn ($get) => $get('tipo_beneficiario') === 'Individual')
                                     ->rule('before_or_equal:today')
-                                    ->visible(fn (Get $get) => $get('tipo_beneficiario') === 'Individual'),
+                                    ->visible(fn ($get) => $get('tipo_beneficiario') === 'Individual'),
     
-                                Forms\Components\Radio::make('genero')
+                                Radio::make('genero')
                                     ->label('Gênero')
                                     ->options([
                                         'Masculino' => 'Masculino',
                                         'Feminino' => 'Feminino',
                                         'Outro' => 'Outro',
                                     ])
-                                    ->required(fn (Get $get) => $get('tipo_beneficiario') === 'Individual')
-                                    ->visible(fn (Get $get) => $get('tipo_beneficiario') === 'Individual'),
+                                    ->required(fn ($get) => $get('tipo_beneficiario') === 'Individual')
+                                    ->visible(fn ($get) => $get('tipo_beneficiario') === 'Individual'),
                             ]),
                             
                             Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('email')
-                                    ->label(fn (Get $get) => $get('is_individual') ? 'Email Pessoal' : 'Email da Instituição')
+                                TextInput::make('email')
+                                    ->label(fn ($get) => $get('tipo_beneficiario') === 'Individual' ? 'Email Pessoal' : 'Email da Instituição')
                                     ->required()
                                     ->email()
                                     ->maxLength(255),
     
-                                Forms\Components\TextInput::make('telemovel')
-                                    ->label(fn (Get $get) => $get('is_individual') ? 'Telemóvel Pessoal' : 'Telemóvel da Instituição')
+                                TextInput::make('telemovel')
+                                    ->label(fn ($get) => $get('tipo_beneficiario') === 'Individual' ? 'Telemóvel Pessoal' : 'Telemóvel da Instituição')
                                     ->tel()
                                     ->numeric()
                                     ->required()
                                     ->maxLength(14),
     
-                                Forms\Components\TextInput::make('telemovel_alternativo')
+                                TextInput::make('telemovel_alternativo')
                                     ->label('Telemóvel Alternativo')
                                     ->tel()
                                     ->numeric()
@@ -110,26 +136,29 @@ class BeneficiarioResource extends Resource
                         ])
                         ->columns(1),
                     
+                    // Passo 3: Outras Informações
                     Wizard\Step::make('Outras Informações')
                         ->schema([
                             Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('endereco')
+                                TextInput::make('endereco')
                                     ->required()
                                     ->prefixIcon('heroicon-o-map-pin')
-                                    ->label(fn (Get $get) => $get('is_individual') ? 'Endereço Pessoal' : 'Endereço da Instituição')
+                                    ->label(fn ($get) => $get('tipo_beneficiario') === 'Individual' ? 'Endereço Pessoal' : 'Endereço da Instituição')
                                     ->maxLength(255),
                             
-                                Forms\Components\TextInput::make('pais')
+                                TextInput::make('pais')
                                     ->label('País')
                                     ->required()
                                     ->prefixIcon('heroicon-o-flag')
                                     ->maxLength(255)
                                     ->default('Angola'),
     
-                                Forms\Components\Select::make('provincia')
+                                Select::make('provincia')
                                     ->label('Província')
                                     ->required()
                                     ->prefixIcon('heroicon-o-map')
+                                    ->searchable()
+                                    ->native(false)
                                     ->options([
                                         'Luanda' => 'Luanda',
                                         'Huambo' => 'Huambo',
@@ -154,42 +183,36 @@ class BeneficiarioResource extends Resource
                                         'Cabinda' => 'Cabinda',
                                     ])
                                     ->default('Luanda'),
-                                    
-                            
-                                Forms\Components\TextInput::make('coordenadas_bancarias')
-                                    ->label(fn (Get $get) => $get('is_individual') ? 'Coordenadas Pessoais' : 'Coordenadas da Instituição')
-                                    ->prefix('AO06 ')
-                                    ->maxLength(255)
-                                    ->required()
-                                    ->default('Não Aplicável')
-                                    ,
                             ]),
                             
                             Grid::make(2)->schema([
-                                Forms\Components\TextInput::make('ano_frequencia')
+                                TextInput::make('coordenadas_bancarias')
+                                    ->label(fn ($get) => $get('tipo_beneficiario') === 'Individual' ? 'Coordenadas Pessoais' : 'Coordenadas da Instituição')
+                                    ->prefix('AO06 ')
+                                    ->maxLength(255)
+                                    ->required(),
+    
+                                TextInput::make('ano_frequencia')
                                     ->label('Ano de Frequência')
                                     ->maxLength(255)
-                                    ->default('Não Aplicável')
-                                    ->visible(fn (Get $get) => $get('tipo_beneficiario') === 'Individual'),
+                                    ->visible(fn ($get) => $get('tipo_beneficiario') === 'Individual'),
     
-                                Forms\Components\TextInput::make('curso')
+                                TextInput::make('curso')
                                     ->label('Curso')
                                     ->maxLength(255)
-                                    ->default('Não Aplicável')
-                                    ->visible(fn (Get $get) => $get('tipo_beneficiario') === 'Individual'),
+                                    ->visible(fn ($get) => $get('tipo_beneficiario') === 'Individual'),
     
-                                Forms\Components\TextInput::make('universidade_ou_escola')
+                                TextInput::make('universidade_ou_escola')
                                     ->label('Universidade ou Escola')
                                     ->maxLength(255)
-                                    ->default('Não Aplicável')
-                                    ->visible(fn (Get $get) => $get('tipo_beneficiario') === 'Individual'),
+                                    ->visible(fn ($get) => $get('tipo_beneficiario') === 'Individual'),
                             ]),
-                            
-                            Forms\Components\RichEditor::make('observacoes')
+    
+                            RichEditor::make('observacoes')
                                 ->label('Observações')
                                 ->columnSpanFull(),
                             
-                            Forms\Components\Hidden::make('id_criador')
+                            Hidden::make('id_criador')
                                 ->label('ID do Criador')
                                 ->required()
                                 ->default(auth()->user()->id),
@@ -200,57 +223,178 @@ class BeneficiarioResource extends Resource
             ]);
     }
     
-
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('tipo_beneficiario')
+                    ->label('Tipo')
+                    ->badge()
+                    ->colors([
+                        'primary' => 'Individual',
+                        'info' => 'Institucional',
+                    ])
+                    ->icons([
+                        'heroicon-o-user' => 'Individual',
+                        'heroicon-o-building-office' => 'Institucional',
+                    ])
                     ->searchable(),
+    
                 Tables\Columns\TextColumn::make('nome')
+                    ->label('Nome')
                     ->searchable(),
+    
                 Tables\Columns\TextColumn::make('bi')
-                    ->searchable(),
+                    ->label('BI')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+    
                 Tables\Columns\TextColumn::make('nif')
-                    ->searchable(),
+                    ->label('NIF')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+    
                 Tables\Columns\TextColumn::make('data_nascimento')
-                    ->date()
-                    ->sortable(),
+                    ->label('Data de Nascimento')
+                    ->date('d/m/Y') // Formato DD/MM/YYYY
+                    ->sortable()
+                    ->badge()
+                    ->color('primary')
+                    ->icon('heroicon-o-calendar'),
+    
                 Tables\Columns\TextColumn::make('genero')
+                    ->label('Gênero')
+                    ->badge()
+                    ->colors([
+                        'danger' => 'Feminino',
+                        'info' => 'Masculino',
+                        'gray' => 'Outro',
+                    ])
+                    ->icons([
+                        'heroicon-o-user-circle' => fn ($state): bool => $state === 'Masculino' || $state === 'Feminino',
+                        'heroicon-o-question-mark-circle' => fn ($state): bool => $state === 'Outro',
+                    ])
                     ->searchable(),
+    
                 Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->label('Email')
+                    ->searchable()
+                    ->icon('heroicon-o-envelope'),
+    
                 Tables\Columns\TextColumn::make('telemovel')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('telemovel_alternativo')
-                    ->searchable(),
+                    ->label('Telemóvel')
+                    ->searchable()
+                    ->icon('heroicon-o-phone'),
+    
                 Tables\Columns\TextColumn::make('endereco')
-                    ->searchable(),
+                    ->label('Endereço')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-map-pin'),
+    
                 Tables\Columns\TextColumn::make('pais')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('coordenadas_bancarias')
-                    ->searchable(),
+                    ->label('País')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-flag'),
+    
+                Tables\Columns\TextColumn::make('provincia')
+                    ->label('Província')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-map'),
+    
                 Tables\Columns\TextColumn::make('ano_frequencia')
-                    ->searchable(),
+                    ->label('Ano de Frequência')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-academic-cap'),
+    
                 Tables\Columns\TextColumn::make('curso')
-                    ->searchable(),
+                    ->label('Curso')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-book-open'),
+    
                 Tables\Columns\TextColumn::make('universidade_ou_escola')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('id_criador')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Universidade ou Escola')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->icon('heroicon-o-office-building'),
+    
+                // Tables\Columns\TextColumn::make('id_criador')
+                //     ->label('Criador')
+                //     ->numeric()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true)
+                //     ->icon('heroicon-o-user-group'),
+    
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Criado em')
+                    ->dateTime('d M Y, H:i')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-o-clock'),
+    
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Atualizado em')
+                    ->dateTime('d M Y, H:i')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-o-arrow-path'),
             ])
             ->filters([
+                // Defina os filtros, se necessário
                 //
+                Tables\Filters\Filter::make('created_at')
+                    ->label('Intervalo de Data de Criação')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Intervalo de Data de Criação Inicio'),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Intervalo de Data de Criação Fim'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
+
+                Tables\Filters\Filter::make('data_nascimento')
+                    ->label('Data de Nascimento')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Data de Nascimento Inicial'),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Data de Nascimento Final'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('data_nascimento', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('data_nascimento', '<=', $date),
+                            );
+                    }),
+
+                Tables\Filters\SelectFilter::make('tipo_beneficiario')
+                    ->label('Tipo de Beneficiário')
+                    ->multiple()
+                    ->options([
+                        'Individual' => 'Individual',
+                        'Institucional' => 'Institucional',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -262,7 +406,126 @@ class BeneficiarioResource extends Resource
                 ]),
             ]);
     }
+    
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Section::make('Informações Básicas')
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('nome')
+                            ->label('Nome'),
+    
+                        TextEntry::make('tipo_beneficiario')
+                            ->label('Tipo de Beneficiário')
+                            ->badge()
+                            ->colors([
+                                'primary' => 'Individual',
+                                'success' => 'Institucional',
+                            ])
+                            ->icons([
+                                'heroicon-o-user' => 'Individual',
+                                'heroicon-o-building-office' => 'Institucional',
+                            ]),
+    
+                        TextEntry::make('bi')
+                            ->label('BI')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Individual'),
+    
+                        TextEntry::make('nif')
+                            ->label('NIF')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Institucional'),
+    
+                        TextEntry::make('data_nascimento')
+                            ->label('Data de Nascimento')
+                            ->date('d/m/Y')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Individual'),
+                        
+                        TextEntry::make('genero')
+                            ->label('Gênero')
+                            ->badge()
+                            ->colors([
+                                'pink' => 'Feminino',
+                                'blue' => 'Masculino',
+                                'gray' => 'Outro',
+                            ])
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Individual'),
+                    ]),
+    
+                Section::make('Contatos e Localização')
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('email')
+                            ->label('Email')
+                            ->icon('heroicon-o-envelope'),
+    
+                        TextEntry::make('telemovel')
+                            ->label('Telemóvel')
+                            ->icon('heroicon-o-phone'),
+    
+                        TextEntry::make('telemovel_alternativo')
+                            ->label('Telemóvel Alternativo')
+                            ->icon('heroicon-o-phone'),
+    
+                        TextEntry::make('endereco')
+                            ->label('Endereço')
+                            ->icon('heroicon-o-map-pin')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Institucional'),
+    
+                        TextEntry::make('pais')
+                            ->label('País')
+                            ->icon('heroicon-o-flag'),
+    
+                        TextEntry::make('provincia')
+                            ->label('Província')
+                            ->icon('heroicon-o-map'),
+                    ]),
+    
+                Section::make('Educação e Profissão')
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('ano_frequencia')
+                            ->label('Ano de Frequência')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Individual'),
+    
+                        TextEntry::make('curso')
+                            ->label('Curso')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Individual'),
+    
+                        TextEntry::make('universidade_ou_escola')
+                            ->label('Universidade ou Escola')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Individual'),
+                    ]),
+    
+                Section::make('Outras Informações')
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('observacoes')
+                            ->label('Observações')
+                            ->html(),
+    
+                        TextEntry::make('coordenadas_bancarias')
+                            ->label('Coordenadas Bancárias')
+                            ->hidden(fn ($record) => $record->tipo_beneficiario !== 'Institucional'),
+    
+                        // TextEntry::make('id_criador')
+                        //     ->label('Criador'),
+                        
+                            TextEntry::make('created_at')
+                            ->label('Criado em')
+                            ->dateTime('d M Y, H:i')
+                            ->icon('heroicon-o-clock'),
+                        
+                            TextEntry::make('updated_at')
+                            ->label('Atualizado em')
+                            ->dateTime('d M Y, H:i')
+                            ->icon('heroicon-o-arrow-path'),
+                    ]),
+            ]);
+    }
+    
     public static function getRelations(): array
     {
         return [

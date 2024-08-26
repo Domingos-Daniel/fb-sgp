@@ -32,6 +32,9 @@ class Beneficiario extends Model
         'id_criador',
     ];
 
+    protected $casts = [
+        'provincia' => 'array',
+    ];
     public function criador()
     {
         return $this->belongsTo(User::class, 'id_criador');
