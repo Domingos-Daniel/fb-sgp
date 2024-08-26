@@ -22,9 +22,9 @@ class ListUsers extends ListRecords
             Import::make()
             ->import(UsersImport::class)
             ->type(\Maatwebsite\Excel\Excel::XLSX)
-            ->label('Import from excel')
-            ->hint('Upload xlsx type')
-            //->icon('')
+            ->label('Importortar')
+            ->hint('Carregue um ficheiro .xlsx')
+            ->icon('heroicon-o-arrow-up-on-square')
             ->color('success'),
         ];
     }
