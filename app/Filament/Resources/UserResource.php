@@ -8,8 +8,10 @@ use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\Role;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -24,6 +26,7 @@ use Filament\Tables\Actions\ExportBulkAction;
 use Filament\Infolists\Infolist;
 use Filament\Infolists\Components;
 use Filament\Support\Enums\FontWeight;
+use Filament\Tables\Filters\Filter;
 use Rmsramos\Activitylog\Actions\ActivityLogTimelineTableAction;
 
 class UserResource extends Resource
@@ -117,6 +120,44 @@ class UserResource extends Resource
                     ->label('Função')
                     ->multiple()
                     ->placeholder('Pesquisar funções...'),
+
+                    Filter::make('created_at')
+    ->label('Data de Criação')
+    ->form([
+        DatePicker::make('created_from')
+            ->label('Data de Criação Inicial')
+            ->placeholder('Selecione a data inicial')
+            ->closeOnDateSelection(),
+        DatePicker::make('created_until')
+            ->label('Data de Criação Final')
+            ->placeholder('Selecione a data final')
+            ->closeOnDateSelection(),
+    ])
+    ->query(function (Builder $query, array $data): Builder {
+        return $query
+            ->when(
+                $data['created_from'] ?? null,
+                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+            )
+            ->when(
+                $data['created_until'] ?? null,
+                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+            );
+    })
+    ->indicateUsing(function (array $data): array {
+        $indicators = [];
+
+        if ($data['created_from'] ?? null) {
+            $indicators['created_from'] = 'A partir de ' . \Carbon\Carbon::parse($data['created_from'])->format('d/m/Y');
+        }
+
+        if ($data['created_until'] ?? null) {
+            $indicators['created_until'] = 'Até ' . \Carbon\Carbon::parse($data['created_until'])->format('d/m/Y');
+        }
+
+        return $indicators;
+    }),
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -132,11 +173,6 @@ class UserResource extends Resource
                         'created' => 'info',
                         'updated' => 'warning',
                     ]),
-                // Tables\Actions\Action::make('export')
-                // ->label('Exportar')
-                // ->action(function () {
-                //     return Excel::download(new UsersExporter, 'users.xlsx');
-                // }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -149,22 +185,6 @@ class UserResource extends Resource
                             ExportFormat::Xlsx,
                             ExportFormat::Csv,
                         ]),
-
-
-                    // ExportBulkAction::make('exportcsv')
-                    //     ->label('Exportar CSV')
-                    //     ->formats([
-                    //         ExportFormat::Csv,
-                    //     ])
-                    //     ->exporter(UserExporter::class) 
-                    //     ->columnMapping(true),
-
-
-                    // ExcelExportBulkAction::make('exportxlsx')
-                    //     ->label('Exportar Excel')
-                    //     ->icon('heroicon-o-document-text')
-                    //     ->color('primary'),
-
 
                 ]),
             ]);
