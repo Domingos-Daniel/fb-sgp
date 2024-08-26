@@ -23,6 +23,7 @@ class Beneficiario extends Model
         'telemovel_alternativo',
         'endereco',
         'pais',
+        'provincia',
         'coordenadas_bancarias',
         'ano_frequencia',
         'curso',
@@ -39,7 +40,7 @@ class Beneficiario extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['name', 'bi', 'nif', 'data_nascimento', 'genero', 'email', 'telemovel', 'telemovel_alternativo', 'endereco', 'pais', 'coordenadas_bancarias', 'ano_frequencia', 'curso', 'universidade_ou_escola', 'observacoes']);
+        ->logOnly(['name', 'bi', 'nif', 'data_nascimento', 'genero', 'email', 'telemovel', 'telemovel_alternativo', 'endereco', 'pais', 'provincia', 'coordenadas_bancarias', 'ano_frequencia', 'curso', 'universidade_ou_escola', 'observacoes']);
         // Chain fluent methods for configuration options
     }
 }
