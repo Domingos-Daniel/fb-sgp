@@ -35,7 +35,11 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->brandName('Fundação Brilhante')
             ->path('admin')
+            ->font('Poppins')
+            ->brandLogo(asset('fb.png'))
+            ->brandLogoHeight(fn () => auth()->check() ? '2.5rem' : '3.3rem')
             ->login()
             ->colors([
                 'primary' => Color::Green,
@@ -51,6 +55,7 @@ class AdminPanelProvider extends PanelProvider
                     ->url(fn(): string => EditProfilePage::getUrl())
                     ->icon('heroicon-m-user-circle'),
             ])
+            ->sidebarCollapsibleOnDesktop()
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -89,6 +94,9 @@ class AdminPanelProvider extends PanelProvider
                         rules: 'mimes:jpeg,png|max:1024' //only accept jpeg and png files with a maximum size of 1MB
                     )
             )
+
+            ->globalSearchKeyBindings(['command+l', 'ctrl+l'])
+            ->globalSearchFieldKeyBindingSuffix()
             ->plugins([
                 ActivitylogPlugin::make()
                     ->navigationGroup('Auditoria')
@@ -98,7 +106,7 @@ class AdminPanelProvider extends PanelProvider
                     ->navigationIcon('heroicon-o-shield-check')
                     ->navigationCountBadge(true)
                     ->authorize(
-                        fn () => auth()->check() ? auth()->user()->hasRole('Admin') : false
+                        fn() => auth()->check() ? auth()->user()->hasRole('Admin') : false
                     ),
 
                 FilamentProgressbarPlugin::make()
@@ -111,7 +119,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugin(
                 FilamentUserActivityPlugin::make()
-             )
+            )
 
 
             ->databaseNotifications()

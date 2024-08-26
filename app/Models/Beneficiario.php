@@ -17,6 +17,7 @@ class Beneficiario extends Model
         'nif',
         'data_nascimento',
         'genero',
+        'imagem',
         'email',
         'tipo_beneficiario',
         'telemovel',
