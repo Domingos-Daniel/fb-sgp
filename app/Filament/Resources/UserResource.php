@@ -121,42 +121,42 @@ class UserResource extends Resource
                     ->multiple()
                     ->placeholder('Pesquisar funções...'),
 
-                    Filter::make('created_at')
-    ->label('Data de Criação')
-    ->form([
-        DatePicker::make('created_from')
-            ->label('Data de Criação Inicial')
-            ->placeholder('Selecione a data inicial')
-            ->closeOnDateSelection(),
-        DatePicker::make('created_until')
-            ->label('Data de Criação Final')
-            ->placeholder('Selecione a data final')
-            ->closeOnDateSelection(),
-    ])
-    ->query(function (Builder $query, array $data): Builder {
-        return $query
-            ->when(
-                $data['created_from'] ?? null,
-                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
-            )
-            ->when(
-                $data['created_until'] ?? null,
-                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
-            );
-    })
-    ->indicateUsing(function (array $data): array {
-        $indicators = [];
+                Filter::make('created_at')
+                    ->label('Data de Criação')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label('Data de Criação Inicial')
+                            ->placeholder('Selecione a data inicial')
+                            ->closeOnDateSelection(),
+                        DatePicker::make('created_until')
+                            ->label('Data de Criação Final')
+                            ->placeholder('Selecione a data final')
+                            ->closeOnDateSelection(),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'] ?? null,
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'] ?? null,
+                                fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
 
-        if ($data['created_from'] ?? null) {
-            $indicators['created_from'] = 'A partir de ' . \Carbon\Carbon::parse($data['created_from'])->format('d/m/Y');
-        }
+                        if ($data['created_from'] ?? null) {
+                            $indicators['created_from'] = 'A partir de ' . \Carbon\Carbon::parse($data['created_from'])->format('d/m/Y');
+                        }
 
-        if ($data['created_until'] ?? null) {
-            $indicators['created_until'] = 'Até ' . \Carbon\Carbon::parse($data['created_until'])->format('d/m/Y');
-        }
+                        if ($data['created_until'] ?? null) {
+                            $indicators['created_until'] = 'Até ' . \Carbon\Carbon::parse($data['created_until'])->format('d/m/Y');
+                        }
 
-        return $indicators;
-    }),
+                        return $indicators;
+                    }),
 
             ])
             ->actions([
