@@ -454,7 +454,9 @@ class BeneficiarioResource extends Resource
                             ->height('100px'), // Ocupa toda a largura para a exibição da imagem
 
                         TextEntry::make('nome')
-                            ->label('Nome'),
+                            ->label('Nome')
+                            ->badge()
+                            ->color('info'),
 
                         TextEntry::make('tipo_beneficiario')
                             ->label('Tipo de Beneficiário')
@@ -470,14 +472,23 @@ class BeneficiarioResource extends Resource
 
                         TextEntry::make('bi')
                             ->label('BI')
+                            ->badge()
+                            ->icon('heroicon-o-identification')
+                            ->color('info')
                             ->hidden(fn($record) => $record->tipo_beneficiario !== 'Individual'),
 
                         TextEntry::make('nif')
                             ->label('NIF')
+                            ->badge()
+                            ->icon('heroicon-o-identification')
+                            ->color('info')
                             ->hidden(fn($record) => $record->tipo_beneficiario !== 'Institucional'),
 
                         TextEntry::make('data_nascimento')
                             ->label('Data de Nascimento')
+                            ->badge()
+                            ->color('success')
+                            ->icon('heroicon-o-calendar-date-range')
                             ->date('d/m/Y')
                             ->hidden(fn($record) => $record->tipo_beneficiario !== 'Individual'),
 
@@ -497,27 +508,39 @@ class BeneficiarioResource extends Resource
                     ->schema([
                         TextEntry::make('email')
                             ->label('Email')
+                            ->badge()
+                            ->color('info')
                             ->icon('heroicon-o-envelope'),
 
                         TextEntry::make('telemovel')
                             ->label('Telemóvel')
+                            ->badge()
+                            ->color('success')
                             ->icon('heroicon-o-phone'),
 
                         TextEntry::make('telemovel_alternativo')
                             ->label('Telemóvel Alternativo')
+                            ->badge()
+                            ->color('success')
                             ->icon('heroicon-o-phone'),
 
                         TextEntry::make('endereco')
                             ->label('Endereço')
+                            ->badge()
+                            ->color('info')
                             ->icon('heroicon-o-map-pin')
                             ->hidden(fn($record) => $record->tipo_beneficiario !== 'Institucional'),
 
                         TextEntry::make('pais')
                             ->label('País')
+                            ->badge()
+                            ->color('danger')
                             ->icon('heroicon-o-flag'),
 
                         TextEntry::make('provincia')
                             ->label('Província')
+                            ->badge()
+                            ->color('warning')
                             ->icon('heroicon-o-map'),
                     ]),
 
