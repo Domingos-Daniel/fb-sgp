@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BeneficiarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -7,3 +8,4 @@ Route::get('/', function () {
 });
 
 Route::redirect('/', 'admin');
+route::get('beneficiarios/{id}/export-pdf', [BeneficiarioController::class, 'exportPdf'])->name('beneficiarios.export-pdf');

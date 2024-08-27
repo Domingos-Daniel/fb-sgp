@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Str;
+use Filament\Tables\Actions\Action as TAction;
 
 class BeneficiarioResource extends Resource
 {
@@ -423,6 +424,13 @@ class BeneficiarioResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                TAction::make('exportPdf')
+                ->label('Exportar PDF')
+                ->color('danger')
+                ->icon('heroicon-o-document-text')
+                ->action(function ($record) {
+                    return redirect()->route('beneficiarios.export-pdf', $record->id);
+                }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
