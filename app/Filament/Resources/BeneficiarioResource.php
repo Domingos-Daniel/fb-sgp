@@ -2,11 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\BeneficiarioExporter;
 use App\Filament\Resources\BeneficiarioResource\Pages;
 use App\Filament\Resources\BeneficiarioResource\RelationManagers;
 use App\Filament\Resources\BeneficiarioResource\Widgets\BeneficiarioStatsOverview;
 use App\Models\Beneficiario;
 use Closure;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -34,6 +36,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Str;
 use Filament\Tables\Actions\Action as TAction;
+use Filament\Tables\Actions\ExportBulkAction;
 
 class BeneficiarioResource extends Resource
 {
@@ -435,6 +438,14 @@ class BeneficiarioResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make('export')
+                        ->label('Exportar')
+                        ->exporter(BeneficiarioExporter::class)
+                        ->columnMapping(true)
+                        ->formats([
+                            ExportFormat::Xlsx,
+                            ExportFormat::Csv,
+                        ]),
                 ]),
             ]);
     }

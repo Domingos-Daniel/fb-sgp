@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,15 +13,18 @@
             margin: 0;
             padding: 0;
         }
+
         .container {
             width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
+
         .header {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .header img {
             border-radius: 50%;
             width: 120px;
@@ -28,43 +32,53 @@
             object-fit: cover;
             margin-bottom: 10px;
         }
+
         .header h1 {
             font-size: 24px;
             margin-bottom: 5px;
         }
+
         .header h2 {
             font-size: 18px;
             color: #555;
             font-weight: normal;
             margin-top: 0;
         }
+
         .details {
             width: 100%;
             margin-bottom: 20px;
             border-collapse: collapse;
         }
-        .details th, .details td {
+
+        .details th,
+        .details td {
             padding: 12px;
             border: 1px solid #ddd;
             text-align: left;
             vertical-align: top;
         }
+
         .details th {
             background-color: #f7f7f7;
             font-weight: bold;
         }
+
         .details td {
             background-color: #fff;
         }
+
         .section-title {
             background-color: #f0f0f0;
             padding: 8px 12px;
             font-size: 18px;
             margin-top: 20px;
         }
+
         .details .important {
             background-color: #e9f7ef;
         }
+
         .footer {
             position: fixed;
             bottom: 0;
@@ -77,26 +91,31 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
-            @if($beneficiario->imagem)
+            @if ($beneficiario->imagem)
                 <img src="{{ public_path('storage/' . $beneficiario->imagem) }}" alt="Foto do Beneficiário">
+            @else
+                <img src="{{ public_path('storage/beneficiarios/default.png') }}" alt="Imagem Padrão">
             @endif
+
             <h1>{{ $beneficiario->nome }}</h1>
             <h2>{{ $beneficiario->tipo_beneficiario === 'Individual' ? 'Ficha Pessoal' : 'Ficha da Instituição' }}</h2>
         </div>
 
         <h3 class="section-title">Informações Básicas</h3>
         <table class="details">
-            @if($beneficiario->tipo_beneficiario === 'Individual')
+            @if ($beneficiario->tipo_beneficiario === 'Individual')
                 <tr>
                     <th>BI</th>
                     <td>{{ $beneficiario->bi }}</td>
                 </tr>
                 <tr>
                     <th>Data de Nascimento</th>
-                    <td>{{ $beneficiario->data_nascimento ? date('d/m/Y', strtotime($beneficiario->data_nascimento)) : 'N/A' }}</td>
+                    <td>{{ $beneficiario->data_nascimento ? date('d/m/Y', strtotime($beneficiario->data_nascimento)) : 'N/A' }}
+                    </td>
                 </tr>
                 <tr>
                     <th>Gênero</th>
@@ -132,7 +151,7 @@
 
         <h3 class="section-title">Educação e Profissão</h3>
         <table class="details">
-            @if($beneficiario->tipo_beneficiario === 'Individual')
+            @if ($beneficiario->tipo_beneficiario === 'Individual')
                 <tr>
                     <th>Ano de Frequência</th>
                     <td>{{ $beneficiario->ano_frequencia }}</td>
@@ -154,7 +173,7 @@
                 <th>Observações</th>
                 <td>{!! nl2br(e($beneficiario->observacoes)) !!}</td>
             </tr>
-            @if($beneficiario->tipo_beneficiario === 'Institucional')
+            @if ($beneficiario->tipo_beneficiario === 'Institucional')
                 <tr>
                     <th>Coordenadas Bancárias</th>
                     <td>{{ $beneficiario->coordenadas_bancarias }}</td>
@@ -178,4 +197,5 @@
         Documento gerado por computador pelo SGP em {{ now()->format('d/m/Y H:i') }}.
     </div>
 </body>
+
 </html>

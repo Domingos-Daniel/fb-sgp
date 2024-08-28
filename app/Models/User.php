@@ -38,6 +38,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasMany(self::class);
     }
 
+    public function beneficiarios()
+    {
+        return $this->hasMany(Beneficiario::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
