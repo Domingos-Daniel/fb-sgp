@@ -14,7 +14,14 @@ class ViewBeneficiario extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            Actions\EditAction::make()
+                ->label('Editar Beneficiário')
+                ->icon('heroicon-o-pencil')
+                ->color('info'),
+            Actions\CreateAction::make()
+                ->label('Adicionar Beneficiário')
+                ->icon('heroicon-o-user-plus')
+                ->color('success'),
             Actions\Action::make('exportPdf')
                 ->label('Exportar PDF')
                 ->color('danger')

@@ -12,7 +12,7 @@ class BeneficiarioController extends Controller
         $beneficiario = Beneficiario::findOrFail($id);
 
         $pdf = Pdf::loadView('beneficiarios.pdf', compact('beneficiario'));
-
-        return $pdf->download("beneficiario_{$beneficiario->id}.pdf");
+        $datetime = date('d-m-Y_H-i-s');
+        return $pdf->download("beneficiario_{$beneficiario->nome}_{$datetime}.pdf");
     }
 }

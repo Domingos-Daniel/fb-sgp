@@ -425,12 +425,12 @@ class BeneficiarioResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 TAction::make('exportPdf')
-                ->label('Exportar PDF')
-                ->color('danger')
-                ->icon('heroicon-o-document-text')
-                ->action(function ($record) {
-                    return redirect()->route('beneficiarios.export-pdf', $record->id);
-                }),
+                    ->label('Exportar PDF')
+                    ->color('danger')
+                    ->icon('heroicon-o-document-text')
+                    ->action(function ($record) {
+                        return redirect()->route('beneficiarios.export-pdf', $record->id);
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -447,24 +447,26 @@ class BeneficiarioResource extends Resource
                 Section::make('Informações Básicas')
                     ->columns(2)
                     ->schema([
+
                         ImageEntry::make('imagem')
                             ->label('Imagem do Beneficiário')
                             ->square()
                             ->circular()
                             ->disk('public')
-                            //->extraAttributes(['class' => 'rounded-md shadow border border-gray-300 dark:border-gray-700 dark:bg-gray-900'])
+                            ->default('beneficiarios/default.png')
                             ->columnSpanFull()
                             ->extraImgAttributes([
                                 'alt' => 'Imagem do Beneficiário',
                                 'loading' => 'lazy',
                             ])
                             ->width('100px')
-                            ->height('100px'), // Ocupa toda a largura para a exibição da imagem
+                            ->height('100px'),
 
                         TextEntry::make('nome')
                             ->label('Nome')
                             ->badge()
                             ->color('info'),
+
 
                         TextEntry::make('tipo_beneficiario')
                             ->label('Tipo de Beneficiário')
