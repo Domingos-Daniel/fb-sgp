@@ -5,23 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProgramaSocial extends Model
+class Subprograma extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'id_criador', 
-        'titulo', 
+        'id_programa', 
         'descricao', 
-        'publico_alvo', 
-        'meta',
-        'orcamento',
-        'id_criador',
+        'valor', 
+        'id_criador'
     ];
 
-    public function subprogramas()
+    public function programaSocial()
     {
-        return $this->hasMany(Subprograma::class);
+        return $this->belongsTo(ProgramaSocial::class, 'id_programa');
     }
 
     public function criador()

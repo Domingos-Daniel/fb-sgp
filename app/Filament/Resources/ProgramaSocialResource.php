@@ -20,6 +20,12 @@ class ProgramaSocialResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
     protected static ?string $navigationLabel = 'Programa Social';
     protected static ?string $pluralModelLabel  = 'Programas Sociais';
+    protected static ?string $navigationGroup = 'Gestão de Programas Sociais';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -36,9 +42,15 @@ class ProgramaSocialResource extends Resource
                 Forms\Components\Textarea::make('meta')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('id_criador')
+                Forms\Components\TextInput::make('orcamento')
+                    ->label("Valor do Orçamento")
+                    ->unique(ignoreRecord: true)
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->prefixIcon('heroicon-o-currency-dollar')
+                    ->prefixIconColor('success'),
+                Forms\Components\Hidden::make('id_criador')
+                    ->default(auth()->user()->id),
             ]);
     }
 
