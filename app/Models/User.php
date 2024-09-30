@@ -43,10 +43,33 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasMany(Beneficiario::class);
     }
 
+    public function canApprove($orcamentoGeral)
+{
+    $workflow = $orcamentoGeral->workflow;
+
+    if (!$workflow) {
+        return false;
+    }
+
+    // Etapa 1 - Diretor Geral
+    if ($workflow->etapa == 1 && $this->hasRole('DG')) {
+        return true;
+    }
+
+    // Etapa 2 - Conselho de Administração
+    if ($workflow->etapa == 2 && $this->hasRole('CA Curadores')) {
+        return true;
+    }
+
+    return false;
+}
+
+
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-        ->logOnly(['name', 'email', 'password', 'custom_fields', 'avatar_url']);
+            ->logOnly(['name', 'email', 'password', 'custom_fields', 'avatar_url']);
     }
 
     public function getFilamentAvatarUrl(): ?string

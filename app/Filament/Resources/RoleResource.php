@@ -40,9 +40,6 @@ class RoleResource extends Resource
                     ->native(false)
                     ->searchable()
                     ->preload(),
-                // Forms\Components\TextInput::make('guard_name')
-                //     ->required()
-                //     ->maxLength(255),
             ]);
     }
 
