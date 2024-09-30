@@ -83,7 +83,7 @@ class OrcamentoGeralResource extends Resource
                         TextInput::make('valor_total')
                             ->label('Valor Total (USD)')
                             ->numeric()
-                            ->unique()
+                            ->unique(fn(string $context): bool => $context === 'create')
                             ->prefix('USD') // Prefixo do valor
                             ->placeholder('Digite o valor total')
                             ->required()
@@ -117,7 +117,7 @@ class OrcamentoGeralResource extends Resource
                         RichEditor::make('observacoes')
                             ->label('Observações')
                             ->required()
-                            ->unique()
+                            ->unique(fn(string $context): bool => $context === 'create')
                             ->helperText('Alguma observação para este orçamento.'),
 
                         Hidden::make('id_criador')

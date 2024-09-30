@@ -14,10 +14,10 @@ class OrcamentoGeral extends Model
     use HasFactory;
     protected $table = 'orcamento_gerais';
     protected $fillable = [
-        'valor_total', 
-        'ano_semestre', 
-        'status', 
-        'id_criador', 
+        'valor_total',
+        'ano_semestre',
+        'status',
+        'id_criador',
         'observacoes'
     ];
 
@@ -26,11 +26,11 @@ class OrcamentoGeral extends Model
         return $this->hasMany(OrcamentoPrograma::class);
     }
 
-     // Relação com OrcamentoPrograma
-     public function orcamentoProgramas(): HasMany
-     {
-         return $this->hasMany(OrcamentoPrograma::class, 'id_orcamento');
-     }
+    // Relação com OrcamentoPrograma
+    public function orcamentoProgramas(): HasMany
+    {
+        return $this->hasMany(OrcamentoPrograma::class, 'id_orcamento');
+    }
 
     public function criador()
     {
@@ -56,6 +56,11 @@ class OrcamentoGeral extends Model
         // Retorna o valor restante subtraindo o valor total pelo valor alocado
         return $this->valor_total - $valorAlocado;
     }
+    public function getDisplayNameAttribute()
+    {
+        return 'Orçamento #' . $this->id . ' - USD $' . number_format($this->valor_total, 2, ',', '.');
+    }
+
 
 
     public function workflow2()

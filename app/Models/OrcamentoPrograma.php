@@ -11,11 +11,12 @@ class OrcamentoPrograma extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id_programa', 
-        'id_orcamento', 
-        'valor', 
-        'status', 
-        'id_criador'];
+        'id_programa',
+        'id_orcamento',
+        'valor',
+        'status',
+        'id_criador'
+    ];
 
     public function programaSocial()
     {
@@ -43,6 +44,12 @@ class OrcamentoPrograma extends Model
     {
         return $this->belongsTo(User::class, 'id_criador');
     }
+
+    public function orcamentoPrograma()
+    {
+        return $this->hasOne(OrcamentoPrograma::class, 'id_programa');
+    }
+
 
     // Método para iniciar o fluxo de aprovação
     public function iniciarFluxoAprovacao()

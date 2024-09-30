@@ -21,52 +21,19 @@ class CreateSubprograma extends CreateRecord
     }
 
     protected function afterCreate(): void
-{
-    try {
-        // Verifica se o Subprograma existe
-        $subprograma = Subprograma::find($this->record['id']);
+    {
+        $subprograma = $this->record;
 
-        if (!$subprograma) {
-            throw new \Exception('Subprograma não encontrado.');
-        }
+        // Insert a record into 'gastos' table
+        Gasto::create([
+            'id_programa' => $subprograma->id_programa,
+            'id_subprograma' => $subprograma->id,
+            'valor_gasto' => $subprograma->valor,
+            'id_criador' => auth()->id(),
+        ]);
 
-        // Verifica se o Programa Social associado ao Subprograma existe
-        $programa = $subprograma->programaSocial; // Acessando a relação correta
-
-        if (!$programa) {
-            throw new \Exception('Programa Social associado ao subprograma não encontrado.');
-        }
-
-        
-
-        // Cria o registro de Gasto
-        $gasto = new Gasto();
-        $gasto->id_programa = $programa->id;
-        $gasto->id_subprograma = $subprograma->id;
-        $gasto->valor_gasto = $this->record['valor'];
-
-        // Salvando o gasto
-        $gasto->save();
-
-        
-
-        // Notificação de sucesso
-        Notification::make()
-            ->title('Subprograma Adicionado com Sucesso')
-            ->body('O seu subprograma foi adicionado com sucesso.')
-            ->success()
-            ->sendToDatabase(\auth()->user())
-            ->send();
-    } catch (\Exception $e) {
-        // Notificação de erro
-        Notification::make()
-            ->title('Erro ao Salvar')
-            ->body('Erro na inserção dos dados. Por favor, tente novamente: ' . $e->getMessage())
-            ->danger()
-            ->sendToDatabase(\auth()->user())
-            ->send();
+        // Optionally, you can send a notification
+        $this->notify('success', 'Subprograma criado e gasto registrado com sucesso.');
     }
-}
-
 
 }

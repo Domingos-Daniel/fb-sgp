@@ -18,13 +18,18 @@ class ProgramaSocial extends Model
         'descricao', 
         'publico_alvo', 
         'meta',
-        'orcamento',
     ];
 
     public function subprogramas()
     {
         return $this->hasMany(Subprograma::class);
     }
+
+    public function orcamentoPrograma()
+    {
+        return $this->hasOne(OrcamentoPrograma::class, 'id_programa');
+    }
+
 
     public function criador()
     {
