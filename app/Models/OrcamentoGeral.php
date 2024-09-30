@@ -31,6 +31,15 @@ class OrcamentoGeral extends Model
         return $this->hasMany(OrcamentoPrograma::class, 'id_orcamento');
     }
 
+    public function getValorRestanteAttribute(): float
+    {
+        // Calcula o valor alocado aos programas
+        $valorAlocado = $this->programas()->sum('valor');
+
+        // Retorna o valor restante subtraindo o valor total pelo valor alocado
+        return $this->valor_total - $valorAlocado;
+    }
+
 
     public function workflow2()
     {
