@@ -22,7 +22,7 @@ class OrcamentoPrograma extends Model
         return $this->belongsTo(ProgramaSocial::class);
     }
 
-    // Relação com Programa
+    // Relação com ProgramaSocial
     public function programa(): BelongsTo
     {
         return $this->belongsTo(ProgramaSocial::class, 'id_programa');

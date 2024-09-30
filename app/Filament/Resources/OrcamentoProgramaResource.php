@@ -53,13 +53,13 @@ class OrcamentoProgramaResource extends Resource
                     Forms\Components\Select::make('id_orcamento')
                         ->label('Orçamento Aprovado')
                         ->options(function () {
-                            // Apenas os orçamentos aprovados
-                            return OrcamentoGeral::where('status', 'Aprovado')
-                                ->pluck('valor_total', 'id')
-                                ->map(fn($valor) => '$' . number_format($valor, 2, ',', '.')) // Formato do valor
-                                ->toArray();
-                        })
-                        ->relationship('orcamento', 'valor_total') // Certifique-se de que a relação 'orcamento' está definida no modelo OrcamentoPrograma
+                            // Filtrar apenas os orçamentos que possuem o status exatamente como 'Aprovado'
+                            return OrcamentoGeral::whereRaw("TRIM(status) = ?", ['Aprovado'])
+                            ->get()
+                            ->pluck('valor_total', 'id')
+                            ->map(fn ($valor) => '$' . number_format($valor, 2, ',', '.'))
+                            ->toArray();
+                        }) // Certifique-se de que a relação 'orcamento' está definida no modelo OrcamentoPrograma
                         ->required()
                         ->searchable()
                         ->native(false)

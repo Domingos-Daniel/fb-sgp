@@ -13,12 +13,24 @@ class OrcamentoGeral extends Model
 {
     use HasFactory;
     protected $table = 'orcamento_gerais';
-    protected $fillable = ['valor_total', 'ano_semestre', 'status', 'id_criador', 'observacoes'];
+    protected $fillable = [
+        'valor_total', 
+        'ano_semestre', 
+        'status', 
+        'id_criador', 
+        'observacoes'
+    ];
 
     public function orcamentosProgramas()
     {
         return $this->hasMany(OrcamentoPrograma::class);
     }
+
+     // Relação com OrcamentoPrograma
+     public function orcamentoProgramas(): HasMany
+     {
+         return $this->hasMany(OrcamentoPrograma::class, 'id_orcamento');
+     }
 
     public function criador()
     {
@@ -29,6 +41,11 @@ class OrcamentoGeral extends Model
     public function programas(): HasMany
     {
         return $this->hasMany(OrcamentoPrograma::class, 'id_orcamento');
+    }
+
+    public function programas2(): HasMany
+    {
+        return $this->hasMany(ProgramaSocial::class, 'id'); // Certifique-se de que 'orcamento_id' é a chave estrangeira correta
     }
 
     public function getValorRestanteAttribute(): float

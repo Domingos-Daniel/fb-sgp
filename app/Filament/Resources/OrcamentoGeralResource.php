@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrcamentoGeralResource\Pages;
 use App\Filament\Resources\OrcamentoGeralResource\RelationManagers;
+use App\Filament\Resources\OrcamentoGeralResource\RelationManagers\ProgramasRelationManager;
 use App\Models\OrcamentoGeral;
 use App\Models\User;
 use App\Notifications\OrcamentoAprovadoNotification;
@@ -40,6 +41,7 @@ class OrcamentoGeralResource extends Resource
     protected static ?string $navigationLabel = 'Orçamento Geral';
     protected static ?string $pluralModelLabel  = 'Orçamentos Gerais';
     protected static ?string $navigationGroup = 'Administração';
+    protected static ?string $recordTitleAttribute = 'valor_total';
 
     protected function getWorkflowParticipants($record)
     {
@@ -507,7 +509,7 @@ class OrcamentoGeralResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\OrcamentoProgramasRelationManager::class,
         ];
     }
 
