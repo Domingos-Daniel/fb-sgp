@@ -13,7 +13,10 @@ class Subprograma extends Model
         'id_programa', 
         'descricao', 
         'valor', 
-        'id_criador'
+        'id_criador',
+        'tipo_pagamento',
+        'duracao_patrocinio',
+        'regras_especificas',
     ];
 
     public function programaSocial()
@@ -24,5 +27,15 @@ class Subprograma extends Model
     public function criador()
     {
         return $this->belongsTo(User::class, 'id_criador');
+    }
+
+    public function programa()
+    {
+        return $this->belongsTo(ProgramaSocial::class, 'id_programa');
+    }
+
+    public function patrocinios()
+    {
+        return $this->hasMany(Patrocinio::class, 'id_subprograma');
     }
 }

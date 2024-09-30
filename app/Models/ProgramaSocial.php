@@ -22,7 +22,7 @@ class ProgramaSocial extends Model
 
     public function subprogramas()
     {
-        return $this->hasMany(Subprograma::class);
+        return $this->hasMany(Subprograma::class, 'id_programa');
     }
 
     public function orcamentoPrograma()

@@ -37,6 +37,11 @@ class Beneficiario extends Model
         'provincia' => 'array',
     ];
 
+    public function patrocinios()
+    {
+        return $this->hasMany(Patrocinio::class, 'id_beneficiario');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

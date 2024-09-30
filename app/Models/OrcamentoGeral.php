@@ -38,9 +38,14 @@ class OrcamentoGeral extends Model
     }
 
     // Relação com OrcamentoPrograma
-    public function programas(): HasMany
+    public function programas1(): HasMany
     {
         return $this->hasMany(OrcamentoPrograma::class, 'id_orcamento');
+    }
+
+    public function programas()
+    {
+        return $this->hasMany(ProgramaSocial::class, 'id_orcamento');
     }
 
     public function programas2(): HasMany
