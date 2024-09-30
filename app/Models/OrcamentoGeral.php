@@ -7,6 +7,7 @@ use Filament\Notifications\Livewire\Notifications;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OrcamentoGeral extends Model
 {
@@ -22,6 +23,12 @@ class OrcamentoGeral extends Model
     public function criador()
     {
         return $this->belongsTo(User::class, 'id_criador');
+    }
+
+    // Relação com OrcamentoPrograma
+    public function programas(): HasMany
+    {
+        return $this->hasMany(OrcamentoPrograma::class, 'id_orcamento');
     }
 
 

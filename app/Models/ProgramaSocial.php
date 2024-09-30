@@ -9,6 +9,8 @@ class ProgramaSocial extends Model
 {
     use HasFactory;
 
+    protected $table = 'programa_socials';
+
     protected $fillable = [
         'id_criador', 
         'titulo', 
@@ -16,7 +18,6 @@ class ProgramaSocial extends Model
         'publico_alvo', 
         'meta',
         'orcamento',
-        'id_criador',
     ];
 
     public function subprogramas()
