@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProgramaSocialResource\Pages;
 use App\Filament\Resources\ProgramaSocialResource\RelationManagers;
+use App\Filament\Resources\ProgramaSocialResource\RelationManagers\SubprogramasRelationManager;
 use App\Models\OrcamentoGeral;
 use App\Models\ProgramaSocial;
 use Filament\Forms;
@@ -280,6 +281,7 @@ class ProgramaSocialResource extends Resource
     {
         return [
             //
+            SubprogramasRelationManager::class,
         ];
     }
 
