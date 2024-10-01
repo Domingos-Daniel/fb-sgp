@@ -32,6 +32,11 @@ class PagamentoResource extends Resource
                     ->label('Patrocínio')
                     ->options(
                         Patrocinio::where('status', 'ativo')
+                            ->where(function ($query) {
+                                $query->whereDoesntHave('pagamentos', function ($query) {
+                                    $query->where('created_at', '>=', now()->startOfQuarter());
+                                }); 
+                            })
                             ->with(['beneficiario' => function ($query) {
                                 $query->select('nome', 'id');
                             }, 'subprograma' => function ($query) {
@@ -110,11 +115,22 @@ class PagamentoResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->colors([
-                        'pendente' => 'warning',
-                        'aprovado' => 'success',
-                        'reprovado' => 'danger',
-                    ])
+                    ->icon(
+                        fn ($state) => match ($state) {
+                            'pendente' => 'heroicon-o-clock',
+                            'aprovado' => 'heroicon-o-check-circle',
+                            'reprovado' => 'heroicon-o-x-circle',
+                            default => 'heroicon-o-clock',
+                        }
+                    )
+                    ->color(
+                        fn ($state) => match ($state) {
+                            'pendente' => 'warning',
+                            'aprovado' => 'success',
+                            'reprovado' => 'danger',
+                            default => 'info',
+                        }
+                    )
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('next_payment_date')

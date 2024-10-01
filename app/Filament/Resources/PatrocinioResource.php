@@ -35,7 +35,9 @@ class PatrocinioResource extends Resource
             ->schema([
                 Forms\Components\Select::make('id_beneficiario')
                     ->label('Beneficiário')
-                    ->options(Beneficiario::pluck('nome', 'id')->toArray())
+                    ->options(Beneficiario::whereDoesntHave('patrocinios', function ($query) {
+                        $query->where('status', 'ativo');
+                    })->pluck('nome', 'id')->toArray())
                     ->required()
                     ->searchable(),
 
