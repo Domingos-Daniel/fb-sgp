@@ -55,19 +55,19 @@ class PagamentoResource extends Resource
                         $patrocinio = Patrocinio::find($state);
                         $set('valor', $patrocinio->subprograma->valor);
                     }),
-            
+
                 Forms\Components\DatePicker::make('data_pagamento')
                     ->label('Data do Pagamento')
                     ->required()
                     ->default(now()),
-            
+
                 Forms\Components\TextInput::make('valor')
                     ->label('Valor (USD)')
                     ->numeric()
                     ->required()
                     ->readonly()
                     ->default(0),
-            
+
                 Forms\Components\Textarea::make('motivo_rejeicao')
                     ->label('Motivo da Rejeição')
                     ->hidden()
@@ -82,21 +82,29 @@ class PagamentoResource extends Resource
                 Tables\Columns\TextColumn::make('patrocinio.beneficiario.nome')
                     ->label('Beneficiário')
                     ->sortable()
+                    ->badge()
+                    ->color('info')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('patrocinio.subprograma.descricao')
                     ->label('Subprograma')
                     ->sortable()
+                    ->badge()
+                    ->color('info')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('data_pagamento')
                     ->label('Data do Pagamento')
+                    ->badge()
+                    ->color('info')
                     ->date()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('valor')
                     ->label('Valor (USD)')
                     ->money('usd', true)
+                    ->badge()
+                    ->color('primary')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('status')
@@ -109,8 +117,40 @@ class PagamentoResource extends Resource
                     ])
                     ->sortable(),
 
+                Tables\Columns\TextColumn::make('next_payment_date')
+                    ->dateTime()
+                    ->label('Próximo Pagamento')
+                    ->sortable()
+                    ->badge()
+                    ->color('warning')
+                    ->getStateUsing(function ($record) {
+                        $subprograma = $record->patrocinio->subprograma;
+                        $paymentType = $subprograma->tipo_pagamento;
+                        $createdAt = $record->created_at;
+
+                        switch ($paymentType) {
+                            case 'mensal':
+                                $nextPaymentDate = $createdAt->addMonth();
+                                break;
+                            case 'trimestral':
+                                $nextPaymentDate = $createdAt->addMonths(3);
+                                break;
+                            case 'semestral':
+                                $nextPaymentDate = $createdAt->addMonths(6);
+                                break;
+                            case 'anual':
+                                $nextPaymentDate = $createdAt->addYear();
+                                break;
+                            default:
+                                $nextPaymentDate = null;
+                        }
+
+                        return $nextPaymentDate ? $nextPaymentDate->format('d/m/Y H:i') : '';
+                    }),
+
                 Tables\Columns\TextColumn::make('motivo_rejeicao')
                     ->label('Motivo da Rejeição')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->hidden(
                         function ($record) {
                             return $record !== null && $record->status === 'reprovado';
@@ -119,7 +159,8 @@ class PagamentoResource extends Resource
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
                 Tables\Actions\Action::make('aprovar')
@@ -138,9 +179,9 @@ class PagamentoResource extends Resource
                             ->sendToDatabase(auth()->user())
                             ->send();
                     })
-                    ->visible(fn ($record) => $record->status === 'pendente'),
+                    ->visible(fn($record) => $record->status === 'pendente'),
 
-                    Tables\Actions\Action::make('reprovar')
+                Tables\Actions\Action::make('reprovar')
                     ->label('Reprovar Pagamento')
                     ->color('danger')
                     ->icon('heroicon-o-x-mark')
@@ -164,7 +205,7 @@ class PagamentoResource extends Resource
                     ])
                     ->modalHeading('Reprovar Pagamento')
                     ->modalSubheading('Por favor, informe o motivo da reprovação.')
-                    ->visible(fn ($record) => $record->status === 'pendente'),
+                    ->visible(fn($record) => $record->status === 'pendente'),
 
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -178,7 +219,7 @@ class PagamentoResource extends Resource
                             $record->status = 'aprovado';
                             $record->motivo_rejeicao = null;
                             $record->save();
-                
+
                             Notification::make()
                                 ->title('Pagamentos Aprovados')
                                 ->body("Pagamentos selecionados foram aprovados com sucesso.")
@@ -203,7 +244,7 @@ class PagamentoResource extends Resource
                             $record->status = 'reprovado';
                             $record->motivo_rejeicao = $data['motivo_rejeicao'];
                             $record->save();
-                
+
                             Notification::make()
                                 ->title('Pagamentos Reprovados')
                                 ->body("Pagamentos selecionados foram reprovados.")
@@ -213,7 +254,7 @@ class PagamentoResource extends Resource
                         }
                     })
                     ->visible(true),
-                
+
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
@@ -252,8 +293,43 @@ class PagamentoResource extends Resource
 
                         TextEntry::make('motivo_rejeicao')
                             ->label('Motivo da Rejeição')
-                            ->visible(fn ($record) => $record->status === 'reprovado')
+                            ->visible(fn($record) => $record->status === 'reprovado')
                             ->html(),
+
+                        TextEntry::make('next_payment_date')
+                            ->label('Prox. Pagamento')
+                            ->date()
+                            ->badge()
+                            ->color('warning')
+                            ->getStateUsing(function ($record) {
+                                $subprograma = $record->patrocinio->subprograma;
+                                $paymentType = $subprograma->tipo_pagamento;
+                                $createdAt = $record->created_at;
+
+                                switch ($paymentType) {
+                                    case 'mensal':
+                                        $nextPaymentDate = $createdAt->addMonth();
+                                        break;
+                                    case 'trimestral':
+                                        $nextPaymentDate = $createdAt->addMonths(3);
+                                        break;
+                                    case 'semestral':
+                                        $nextPaymentDate = $createdAt->addMonths(6);
+                                        break;
+                                    case 'anual':
+                                        $nextPaymentDate = $createdAt->addYear();
+                                        break;
+                                    default:
+                                        $nextPaymentDate = null;
+                                }
+
+                                return $nextPaymentDate ? $nextPaymentDate->format('d/m/Y H:i') : '';
+                            })
+                            ->visible(fn($record) => $record->status === 'aprovado'),
+
+                        TextEntry::make('created_at')
+                            ->label('Data de Criação')
+                            ->date(),
                     ])
                     ->columns(2),
             ]);

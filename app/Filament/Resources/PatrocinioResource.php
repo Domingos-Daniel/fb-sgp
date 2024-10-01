@@ -79,27 +79,56 @@ class PatrocinioResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('beneficiario.nome')
                     ->label('Beneficiário')
+                    ->badge()
+                    ->color('primary')
                     ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('subprograma.descricao')
                     ->label('Subprograma')
+                    ->badge()
+                    ->color('info')
                     ->sortable()
                     ->searchable(),
+
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->icon(
+                        fn ($state) => match ($state) {
+                            'ativo' => 'heroicon-o-check-circle',
+                            'expirado' => 'heroicon-o-x-circle',
+                            default => 'heroicon-o-clock',
+                        }
+                    )
+                    ->colors([
+                        'pendente' => 'warning',
+                        'aprovado' => 'success',
+                        'reprovado' => 'danger',
+                    ])
+                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('data_inicio')
                     ->label('Data de Início')
                     ->date()
+                    ->badge()
+                    ->color('info')
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('data_fim')
                     ->label('Data de Fim')
                     ->date()
+                    ->badge()
+                    ->color(
+                        fn ($state) => $state === 'expirado' ? 'danger' : 'info'
+                    )
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
@@ -123,6 +152,22 @@ class PatrocinioResource extends Resource
                         TextEntry::make('subprograma.descricao')
                             ->label('Subprograma')
                             ->badge(),
+
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->badge()
+                            ->icon(
+                                fn ($state) => match ($state) {
+                                    'ativo' => 'heroicon-o-check-circle',
+                                    'expirado' => 'heroicon-o-x-circle',
+                                    default => 'heroicon-o-clock',
+                                }
+                            )
+                            ->colors([
+                                'pendente' => 'warning',
+                                'aprovado' => 'success',
+                                'reprovado' => 'danger',
+                            ]),
 
                         TextEntry::make('data_inicio')
                             ->label('Data de Início')
