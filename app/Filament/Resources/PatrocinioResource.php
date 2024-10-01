@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\PatrocinioResource\RelationManagers\PagamentosRelationManager;
 use App\Filament\Resources\PatrocinioResource\Pages;
 use App\Filament\Resources\PatrocinioResource\RelationManagers;
 use App\Models\Beneficiario;
@@ -191,6 +192,7 @@ class PatrocinioResource extends Resource
     {
         return [
             //
+            PagamentosRelationManager::class,
         ];
     }
 
