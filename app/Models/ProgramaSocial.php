@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class ProgramaSocial extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $table = 'programa_socials';
 
@@ -19,6 +21,13 @@ class ProgramaSocial extends Model
         'publico_alvo', 
         'meta',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['id_criador', 'titulo', 'descricao', 'publico_alvo', 'meta']);
+        // Chain fluent methods for configuration options
+    }
 
     public function subprogramas()
     {

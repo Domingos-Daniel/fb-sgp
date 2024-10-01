@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Subprograma extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'id_programa', 
@@ -18,6 +20,13 @@ class Subprograma extends Model
         'duracao_patrocinio',
         'regras_especificas',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['id_programa', 'descricao', 'valor', 'id_criador', 'tipo_pagamento', 'duracao_patrocinio', 'regras_especificas']);
+        // Chain fluent methods for configuration options
+    }
 
     public function programaSocial()
     {

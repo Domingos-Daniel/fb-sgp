@@ -8,10 +8,12 @@ use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class OrcamentoGeral extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
     protected $table = 'orcamento_gerais';
     protected $fillable = [
         'valor_total',
@@ -20,6 +22,13 @@ class OrcamentoGeral extends Model
         'id_criador',
         'observacoes'
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['valor_total', 'ano_semestre', 'status', 'observacoes', 'id_criador']);
+        // Chain fluent methods for configuration options
+    }
 
     public function orcamentosProgramas()
     {

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Patrocinio extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'id_beneficiario',
@@ -18,6 +20,13 @@ class Patrocinio extends Model
         'observacoes',
         'id_criador',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['id_beneficiario', 'id_subprograma', 'data_fim', 'status', 'observatories', 'id_criador']);
+        // Chain fluent methods for configuration options
+    }
 
     // app/Models/Patrocinio.php
 
