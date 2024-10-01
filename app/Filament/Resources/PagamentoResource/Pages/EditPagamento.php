@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\SubprogramaResource\Pages;
+namespace App\Filament\Resources\PagamentoResource\Pages;
 
-use App\Filament\Resources\SubprogramaResource;
+use App\Filament\Resources\PagamentoResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditSubprograma extends EditRecord
+class EditPagamento extends EditRecord
 {
-    protected static string $resource = SubprogramaResource::class;
+    protected static string $resource = PagamentoResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -17,6 +17,4 @@ class EditSubprograma extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-
-    
 }

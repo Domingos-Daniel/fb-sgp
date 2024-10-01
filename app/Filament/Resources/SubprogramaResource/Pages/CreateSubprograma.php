@@ -33,7 +33,12 @@ class CreateSubprograma extends CreateRecord
         ]);
 
         // Optionally, you can send a notification
-        $this->notify('success', 'Subprograma criado e gasto registrado com sucesso.');
+        Notification::make()
+            ->success()
+            ->title('Subprograma criado')   
+            ->body('Subprograma criado com sucesso.')
+            ->sendToDatabase(auth()->user());
+        //$this->notify('success', 'Subprograma criado e gasto registrado com sucesso.');
     }
 
 }
