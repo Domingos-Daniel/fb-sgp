@@ -301,11 +301,16 @@ class PagamentoResource extends Resource
                         TextEntry::make('status')
                             ->label('Status')
                             ->badge()
-                            ->colors([
-                                'pendente' => 'warning',
-                                'aprovado' => 'success',
-                                'reprovado' => 'danger',
-                            ]),
+                            ->icon(
+                                fn ($state) => match ($state) {
+                                    'aprovado' => 'heroicon-o-check-circle',
+                                    'reprovado' => 'heroicon-o-x-circle',
+                                    default => 'heroicon-o-clock',
+                                }
+                            )
+                            ->color(
+                                fn($record) => $record->status === 'aprovado' ? 'success' : ($record->status === 'reprovado' ? 'danger' : 'warning'),
+                            ),
 
                         TextEntry::make('motivo_rejeicao')
                             ->label('Motivo da Rejeição')
@@ -340,8 +345,7 @@ class PagamentoResource extends Resource
                                 }
 
                                 return $nextPaymentDate ? $nextPaymentDate->format('d/m/Y H:i') : '';
-                            })
-                            ->visible(fn($record) => $record->status === 'aprovado'),
+                            }),
 
                         TextEntry::make('created_at')
                             ->label('Data de Criação')
