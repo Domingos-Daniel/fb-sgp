@@ -8,6 +8,7 @@ use App\Filament\Resources\PatrocinioResource\RelationManagers;
 use App\Models\Beneficiario;
 use App\Models\Patrocinio;
 use App\Models\Subprograma;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
@@ -42,29 +43,57 @@ class PatrocinioResource extends Resource
                     ->required()
                     ->searchable(),
 
-                Forms\Components\Select::make('id_subprograma')
+                    Forms\Components\Select::make('id_subprograma')
                     ->label('Subprograma')
                     ->options(Subprograma::pluck('descricao', 'id')->toArray())
                     ->required()
                     ->searchable()
                     ->reactive()
-                    ->afterStateUpdated(function ($state, callable $set) {
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
                         if ($state) {
+                            // Buscar o subprograma selecionado e sua duração
                             $subprograma = Subprograma::find($state);
-                            $set('data_inicio', now()->format('Y-m-d'));
-                            $set('data_fim', $subprograma->duracao_patrocinio ? now()->addMonths($subprograma->duracao_patrocinio)->format('Y-m-d') : null);
+                            if ($subprograma) {
+                                $set('data_inicio', now()->format('Y-m-d')); // Define a data de início como o dia atual
+                                
+                                // Se a duração estiver definida no subprograma, calcula a data de fim
+                                $duracao = $subprograma->duracao_patrocinio;
+                                if ($duracao) {
+                                    $dataFim = Carbon::parse($get('data_inicio'))->addMonths($duracao)->format('Y-m-d');
+                                    $set('data_fim', $dataFim);
+                                } else {
+                                    $set('data_fim', null); // Se a duração não estiver definida, limpa a data de fim
+                                }
+                            }
                         }
                     }),
-
-                Forms\Components\DatePicker::make('data_inicio')
+                
+                    Forms\Components\DatePicker::make('data_inicio')
                     ->label('Data de Início')
                     ->required()
-                    ->default(now()->format('Y-m-d')),
-
-                Forms\Components\DatePicker::make('data_fim')
+                    ->default(now()->format('Y-m-d'))
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        // Quando a data de início mudar, recalcula a data de fim com base no subprograma selecionado
+                        $subprogramaId = $get('id_subprograma');
+                        if ($subprogramaId) {
+                            $subprograma = Subprograma::find($subprogramaId);
+                            if ($subprograma) {
+                                $duracao = $subprograma->duracao_patrocinio;
+                                if ($duracao) {
+                                    $dataFim = Carbon::parse($state)->addMonths($duracao)->format('Y-m-d');
+                                    $set('data_fim', $dataFim);
+                                }
+                            }
+                        }
+                    }),
+                
+                    Forms\Components\DatePicker::make('data_fim')
                     ->label('Data de Fim')
                     ->required()
-                    ->reactive(),
+                    ->disabled() // Desativa o campo para impedir edição manual
+                    ->default(now()->addMonth()->format('Y-m-d')) // Define um valor padrão inicial
+                    ->reactive(), // Permite reatividade para ser atualizado automaticamente
 
                 Forms\Components\Textarea::make('observacoes')
                     ->label('Observações')
@@ -74,6 +103,12 @@ class PatrocinioResource extends Resource
                 Forms\Components\Hidden::make('id_criador')
                     ->default(auth()->id()),
             ]);
+    }
+
+    protected function getSubprogramaDuracao($id_subprograma)
+    {
+        $subprograma = \App\Models\Subprograma::find($id_subprograma);
+        return $subprograma ? $subprograma->duracao_patrocinio : 0;
     }
 
     public static function table(Table $table): Table

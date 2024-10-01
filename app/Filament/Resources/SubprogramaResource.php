@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SubprogramaResource\Pages;
+use App\Filament\Resources\SubprogramaResource\RelationManagers\PatrociniosRelationManager;
 use App\Models\Gasto;
 use App\Models\ProgramaSocial;
 use App\Models\Subprograma;
@@ -228,6 +229,7 @@ class SubprogramaResource extends Resource
     {
         return [
             //
+            PatrociniosRelationManager::class,
         ];
     }
 
