@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Exports\BeneficiarioExporter;
 use App\Filament\Resources\BeneficiarioResource\Pages;
 use App\Filament\Resources\BeneficiarioResource\RelationManagers;
+use App\Filament\Resources\BeneficiarioResource\RelationManagers\PagamentosRelationManager;
+use App\Filament\Resources\BeneficiarioResource\RelationManagers\PatrociniosRelationManager;
 use App\Filament\Resources\BeneficiarioResource\Widgets\BeneficiarioStatsOverview;
 use App\Models\Beneficiario;
 use Closure;
@@ -48,8 +50,9 @@ class BeneficiarioResource extends Resource
 
     protected static ?string $modelLabel = 'Beneficiario';
     //protected static ?int $navigationSort = 1;
-    protected static ?string $pluralModelLabel = 'Gestão dos Beneficiarios';
+    protected static ?string $pluralModelLabel = 'Beneficiarios';
 
+    protected static ?string $navigationGroup = 'Gestão de Beneficiários';
 
     public static function form(Form $form): Form
     {
@@ -610,6 +613,8 @@ class BeneficiarioResource extends Resource
     {
         return [
             //
+            PagamentosRelationManager::class,
+            PatrociniosRelationManager::class,
         ];
     }
 
@@ -637,6 +642,7 @@ class BeneficiarioResource extends Resource
                 ->url(static::getUrl('edit', ['record' => $record])),
         ];
     }
+
 
     public static function getWidgets(): array
     {
