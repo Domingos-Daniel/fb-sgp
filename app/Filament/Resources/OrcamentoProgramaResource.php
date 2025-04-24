@@ -69,7 +69,16 @@ class OrcamentoProgramaResource extends Resource
                         ->afterStateUpdated(function ($state, callable $set) {
                             if ($state) {
                                 $orcamento = OrcamentoGeral::find($state);
-                                $valorRestante = $orcamento ? $orcamento->valor_total - $orcamento->valor_alocado : 0;
+                                // Usar o accessor valor_restante que já está definido no modelo
+                                $valorRestante = $orcamento ? $orcamento->valor_restante : 0;
+                                $set('valor_restante', $valorRestante);
+                            }
+                        })
+                        ->afterStateHydrated(function ($state, callable $set) {
+                            // Também atualizar ao editar um registro existente
+                            if ($state) {
+                                $orcamento = OrcamentoGeral::find($state);
+                                $valorRestante = $orcamento ? $orcamento->valor_restante : 0;
                                 $set('valor_restante', $valorRestante);
                             }
                         }),

@@ -64,12 +64,13 @@ class OrcamentoGeral extends Model
 
     public function getValorRestanteAttribute(): float
     {
-        // Calcula o valor alocado aos programas
-        $valorAlocado = $this->programas()->sum('valor');
+        // Usa o relacionamento correto que contém a coluna 'valor'
+        $valorAlocado = $this->orcamentoProgramas()->sum('valor');
 
         // Retorna o valor restante subtraindo o valor total pelo valor alocado
         return $this->valor_total - $valorAlocado;
     }
+
     public function getDisplayNameAttribute()
     {
         return 'Orçamento #' . $this->id . ' - USD $' . number_format($this->valor_total, 2, ',', '.');
