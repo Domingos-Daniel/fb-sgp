@@ -35,10 +35,10 @@ class ListBeneficiarios extends ListRecords
         ];
     }
 
-    public function updated($name)
+    /* public function updated($name)
     {
         if (Str::of($name)->contains(['mountedTableAction', 'mountedTableBulkAction'])) {
             $this->emit('updateBeneficiarioOverview');
         }
-    }
+    } */
 }

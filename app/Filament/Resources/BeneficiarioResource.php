@@ -460,50 +460,75 @@ class BeneficiarioResource extends Resource
                     ->label('Atribuir Patrocínio')
                     ->icon('heroicon-o-banknotes')
                     ->form([
-                        Forms\Components\Select::make('id_subprograma')
-                            ->label('Subprograma')
-                            ->options(Subprograma::pluck('descricao', 'id'))
-                            ->required()
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                if ($state) {
-                                    $subprograma = Subprograma::find($state);
-                                    if ($subprograma) {
-                                        $set('data_inicio', now()->format('Y-m-d'));
-                                        
-                                        $duracao = $subprograma->duracao_patrocinio;
-                                        if ($duracao) {
-                                            $dataFim = Carbon::parse(now())->addMonths($duracao)->format('Y-m-d');
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('id_subprograma')
+                                    ->label('Subprograma')
+                                    ->options(function () {
+                                        return Subprograma::all()
+                                            ->mapWithKeys(function ($subprograma) {
+                                                $duracao = $subprograma->duracao_patrocinio ? " ({$subprograma->duracao_patrocinio} meses)" : "";
+                                                return [$subprograma->id => "{$subprograma->descricao}{$duracao}"];
+                                            });
+                                    })
+                                    ->required()
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if ($state) {
+                                            $subprograma = Subprograma::find($state);
+                                            if ($subprograma) {
+                                                // Define a data de início como hoje
+                                                $dataInicio = now()->format('Y-m-d');
+                                                $set('data_inicio', $dataInicio);
+                                                
+                                                // Calcula a data de fim
+                                                if ($subprograma->duracao_patrocinio) {
+                                                    $dataFim = now()->addMonths($subprograma->duracao_patrocinio)->format('Y-m-d');
+                                                    $set('data_fim', $dataFim);
+                                                }
+                                                
+                                                // Armazena a duração para facilitar recálculos
+                                                $set('duracao_meses', $subprograma->duracao_patrocinio);
+                                            }
+                                        }
+                                    }),
+
+                                Forms\Components\TextInput::make('duracao_meses')
+                                    ->label('Duração (meses)')
+                                    ->disabled()
+                                    ->suffixIcon('heroicon-o-calendar')
+                                    ->visible(function (Get $get) {
+                                        return $get('id_subprograma') !== null;
+                                    }),
+                            ]),
+
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\DatePicker::make('data_inicio')
+                                    ->label('Data de Início')
+                                    ->required()
+                                    ->default(now())
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                        // Recalcula data de fim quando mudar a data de início
+                                        $duracao = $get('duracao_meses');
+                                        if ($duracao && $state) {
+                                            $dataFim = Carbon::parse($state)->addMonths($duracao)->format('Y-m-d');
                                             $set('data_fim', $dataFim);
                                         }
-                                    }
-                                }
-                            }),
-                        
-                        Forms\Components\DatePicker::make('data_inicio')
-                            ->label('Data de Início')
-                            ->required()
-                            ->default(now())
-                            ->reactive()
-                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
-                                $subprogramaId = $get('id_subprograma');
-                                if ($subprogramaId) {
-                                    $subprograma = Subprograma::find($subprogramaId);
-                                    if ($subprograma && $subprograma->duracao_patrocinio) {
-                                        $dataFim = Carbon::parse($state)->addMonths($subprograma->duracao_patrocinio)->format('Y-m-d');
-                                        $set('data_fim', $dataFim);
-                                    }
-                                }
-                            }),
-                        
-                        Forms\Components\DatePicker::make('data_fim')
-                            ->label('Data de Fim')
-                            ->required()
-                            ->disabled(),
+                                    }),
+                                
+                                Forms\Components\DatePicker::make('data_fim')
+                                    ->label('Data de Fim')
+                                    ->required()
+                                    ->readonly()
+                                    ->reactive(),
+                            ]),
                             
                         Forms\Components\Textarea::make('observacoes')
                             ->label('Observações')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                     ])
                     ->action(function (Collection $records, array $data) {
                         $count = 0;
