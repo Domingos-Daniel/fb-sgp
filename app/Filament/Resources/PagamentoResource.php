@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PagamentoResource\Pages;
 use App\Models\Pagamento;
 use App\Models\Patrocinio;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Section;
@@ -15,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Collection;
+use App\Helpers\DateHelper;
 
 class PagamentoResource extends Resource
 {
@@ -134,34 +136,39 @@ class PagamentoResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('next_payment_date')
-                    ->dateTime()
+                    ->dateTime('d/m/Y')  // Formato explícito
                     ->label('Próximo Pagamento')
                     ->sortable()
                     ->badge()
                     ->color('warning')
                     ->getStateUsing(function ($record) {
+                        if (!$record || !$record->patrocinio || !$record->patrocinio->subprograma) {
+                            return null;
+                        }
+                        
                         $subprograma = $record->patrocinio->subprograma;
                         $paymentType = $subprograma->tipo_pagamento;
-                        $createdAt = $record->created_at;
-
-                        switch ($paymentType) {
-                            case 'mensal':
-                                $nextPaymentDate = $createdAt->addMonth();
-                                break;
-                            case 'trimestral':
-                                $nextPaymentDate = $createdAt->addMonths(3);
-                                break;
-                            case 'semestral':
-                                $nextPaymentDate = $createdAt->addMonths(6);
-                                break;
-                            case 'anual':
-                                $nextPaymentDate = $createdAt->addYear();
-                                break;
-                            default:
-                                $nextPaymentDate = null;
+                        
+                        // Usar DateHelper para garantir que temos um objeto Carbon válido
+                        try {
+                            $lastPaymentDate = DateHelper::parseAnyDate($record->data_pagamento);
+                            
+                            // Calcular próximo pagamento com base no tipo
+                            switch ($paymentType) {
+                                case 'mensal':
+                                    return $lastPaymentDate->copy()->addMonth();
+                                case 'trimestral':
+                                    return $lastPaymentDate->copy()->addMonths(3);
+                                case 'semestral':
+                                    return $lastPaymentDate->copy()->addMonths(6);
+                                case 'anual':
+                                    return $lastPaymentDate->copy()->addYear();
+                                default:
+                                    return null;
+                            }
+                        } catch (\Exception $e) {
+                            return null;
                         }
-
-                        return $nextPaymentDate ? $nextPaymentDate->format('d/m/Y H:i') : '';
                     }),
 
                 Tables\Columns\TextColumn::make('motivo_rejeicao')
@@ -319,32 +326,43 @@ class PagamentoResource extends Resource
 
                         TextEntry::make('next_payment_date')
                             ->label('Prox. Pagamento')
-                            ->date()
+                            ->date('d/m/Y')  // Formato explícito
                             ->badge()
                             ->color('warning')
                             ->getStateUsing(function ($record) {
+                                if (!$record || !$record->patrocinio || !$record->patrocinio->subprograma) {
+                                    return null;
+                                }
+                                
                                 $subprograma = $record->patrocinio->subprograma;
                                 $paymentType = $subprograma->tipo_pagamento;
-                                $createdAt = $record->created_at;
-
-                                switch ($paymentType) {
-                                    case 'mensal':
-                                        $nextPaymentDate = $createdAt->addMonth();
-                                        break;
-                                    case 'trimestral':
-                                        $nextPaymentDate = $createdAt->addMonths(3);
-                                        break;
-                                    case 'semestral':
-                                        $nextPaymentDate = $createdAt->addMonths(6);
-                                        break;
-                                    case 'anual':
-                                        $nextPaymentDate = $createdAt->addYear();
-                                        break;
-                                    default:
-                                        $nextPaymentDate = null;
+                                
+                                // Sempre usar data_pagamento (não created_at)
+                                try {
+                                    $lastPaymentDate = DateHelper::parseAnyDate($record->data_pagamento);
+                                    
+                                    // Calcular data do próximo pagamento
+                                    switch ($paymentType) {
+                                        case 'mensal':
+                                            $nextPaymentDate = $lastPaymentDate->copy()->addMonth();
+                                            break;
+                                        case 'trimestral':
+                                            $nextPaymentDate = $lastPaymentDate->copy()->addMonths(3);
+                                            break;
+                                        case 'semestral':
+                                            $nextPaymentDate = $lastPaymentDate->copy()->addMonths(6);
+                                            break;
+                                        case 'anual':
+                                            $nextPaymentDate = $lastPaymentDate->copy()->addYear();
+                                            break;
+                                        default:
+                                            return null;
+                                    }
+                                    
+                                    return $nextPaymentDate;
+                                } catch (\Exception $e) {
+                                    return null;
                                 }
-
-                                return $nextPaymentDate ? $nextPaymentDate->format('d/m/Y H:i') : '';
                             }),
 
                         TextEntry::make('created_at')
