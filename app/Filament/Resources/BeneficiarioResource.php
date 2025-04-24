@@ -9,6 +9,9 @@ use App\Filament\Resources\BeneficiarioResource\RelationManagers\PagamentosRelat
 use App\Filament\Resources\BeneficiarioResource\RelationManagers\PatrociniosRelationManager;
 use App\Filament\Resources\BeneficiarioResource\Widgets\BeneficiarioStatsOverview;
 use App\Models\Beneficiario;
+use App\Models\Patrocinio;
+use App\Models\Subprograma;
+use Carbon\Carbon;
 use Closure;
 use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Forms;
@@ -28,6 +31,7 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -39,6 +43,7 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Illuminate\Support\Str;
 use Filament\Tables\Actions\Action as TAction;
 use Filament\Tables\Actions\ExportBulkAction;
+use Illuminate\Database\Eloquent\Collection;
 
 class BeneficiarioResource extends Resource
 {
@@ -271,6 +276,7 @@ class BeneficiarioResource extends Resource
 
                 Tables\Columns\TextColumn::make('nome')
                     ->label('Nome')
+                    ->sortable()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('bi')
@@ -450,6 +456,79 @@ class BeneficiarioResource extends Resource
                             ExportFormat::Csv,
                         ]),
                 ]),
+                Tables\Actions\BulkAction::make('atribuirPatrocinio')
+                    ->label('Atribuir Patrocínio')
+                    ->icon('heroicon-o-banknotes')
+                    ->form([
+                        Forms\Components\Select::make('id_subprograma')
+                            ->label('Subprograma')
+                            ->options(Subprograma::pluck('descricao', 'id'))
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $subprograma = Subprograma::find($state);
+                                    if ($subprograma) {
+                                        $set('data_inicio', now()->format('Y-m-d'));
+                                        
+                                        $duracao = $subprograma->duracao_patrocinio;
+                                        if ($duracao) {
+                                            $dataFim = Carbon::parse(now())->addMonths($duracao)->format('Y-m-d');
+                                            $set('data_fim', $dataFim);
+                                        }
+                                    }
+                                }
+                            }),
+                        
+                        Forms\Components\DatePicker::make('data_inicio')
+                            ->label('Data de Início')
+                            ->required()
+                            ->default(now())
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                $subprogramaId = $get('id_subprograma');
+                                if ($subprogramaId) {
+                                    $subprograma = Subprograma::find($subprogramaId);
+                                    if ($subprograma && $subprograma->duracao_patrocinio) {
+                                        $dataFim = Carbon::parse($state)->addMonths($subprograma->duracao_patrocinio)->format('Y-m-d');
+                                        $set('data_fim', $dataFim);
+                                    }
+                                }
+                            }),
+                        
+                        Forms\Components\DatePicker::make('data_fim')
+                            ->label('Data de Fim')
+                            ->required()
+                            ->disabled(),
+                            
+                        Forms\Components\Textarea::make('observacoes')
+                            ->label('Observações')
+                            ->maxLength(255),
+                    ])
+                    ->action(function (Collection $records, array $data) {
+                        $count = 0;
+                        
+                        foreach ($records as $beneficiario) {
+                            // Verifica se já tem um patrocínio ativo
+                            if (!$beneficiario->patrocinios()->where('status', 'ativo')->exists()) {
+                                Patrocinio::create([
+                                    'id_beneficiario' => $beneficiario->id,
+                                    'id_subprograma' => $data['id_subprograma'],
+                                    'status' => 'ativo',
+                                    'data_inicio' => $data['data_inicio'],
+                                    'data_fim' => $data['data_fim'],
+                                    'observacoes' => $data['observacoes'] ?? null,
+                                    'id_criador' => auth()->id(),
+                                ]);
+                                $count++;
+                            }
+                        }
+                        
+                        Notification::make()
+                            ->title("{$count} patrocínios criados com sucesso")
+                            ->success()
+                            ->send();
+                    }),
             ]);
     }
 

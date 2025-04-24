@@ -6,29 +6,43 @@ use App\Models\Beneficiario;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class BeneficiariosImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        return new Beneficiario([
-            'nome' => $row['nome'],
-            'tipo_beneficiario' => $row['tipo_de_beneficiario'],
-            'bi' => $row['bi'],
-            'nif' => $row['nif'],
-            'data_nascimento' => $row['data_de_nascimento'],
-            'genero' => $row['genero'],
-            'email' => $row['email'],
-            'telemovel' => $row['telemovel'],
-            'telemovel_alternativo' => $row['telemovel_alternativo'],
-            'endereco' => $row['endereco'],
-            'pais' => $row['pais'],
-            'provincia' => $row['provincia'],
-            'ano_frequencia' => $row['ano_de_frequencia'],
-            'curso' => $row['curso'],
-            'universidade_ou_escola' => $row['universidade_ou_escola'],
-            'coordenadas_bancarias' => $row['coordenadas_bancarias'],
-            'id_criador' => Auth::id(), // Atribui o ID do usuário autenticado como criador
-        ]);
+        // Registre os cabeçalhos para debugging sem interromper o fluxo
+        Log::info('Cabeçalhos do Excel:', array_keys($row));
+        Log::info('Dados da linha:', $row);
+        
+        // Verifica se existem diferentes possibilidades para os nomes das colunas
+        $nome = $row['nome'] ?? $row['nome_completo'] ?? $row['nomecompleto'] ?? $row['beneficiary'] ?? null;
+        $iban = $row['iban'] ?? $row['coordenadas_bancarias'] ?? null;
+        $pais = $row['pais'] ?? $row['country'] ?? null;
+        $endereco = $row['endereco'] ?? $row['city'] ?? null;
+        
+        // Se nome for nulo, não crie o registro
+        if ($nome === null) {
+            Log::warning('Linha ignorada: nome é null', $row);
+            return null;
+        }
+        
+        $data = [
+            'nome' => $nome,
+            'coordenadas_bancarias' => $iban,
+            'id_criador' => Auth::id(),
+        ];
+        
+        // Adiciona campos opcionais se disponíveis
+        if ($pais !== null) {
+            $data['pais'] = $pais;
+        }
+        
+        if ($endereco !== null) {
+            $data['endereco'] = $endereco;
+        }
+        
+        return new Beneficiario($data);
     }
 }
