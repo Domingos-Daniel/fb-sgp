@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class PatrociniosRelationManager extends RelationManager
 {
     protected static string $relationship = 'patrocinios';
+    protected static bool $isLazy = false;
 
     public function form(Form $form): Form
     {

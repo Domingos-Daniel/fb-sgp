@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 class PagamentosRelationManager extends RelationManager
 {
     protected static string $relationship = 'pagamentos';
+    protected static bool $isLazy = false;
 
     public function form(Form $form): Form
     {
